@@ -1,0 +1,15 @@
+{
+  "name": "ai-kernel-backend",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/server.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "body-parser": "^1.20.0",
+    "dotenv": "^17.2.3",
+    "express": "^4.18.0",
+    "openai": "^6.15.0"
+  }
+}

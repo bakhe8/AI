@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AI Kernel</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div id="grid">
+        <div class="panel" data-model="openai">
+            <div class="panel-header">
+                <span>OpenAI</span>
+                <span class="status-indicator" data-status="openai"></span>
+            </div>
+            <div class="messages"></div>
+            <div class="input-area">
+                <input type="text" placeholder="Type a message...">
+                <button>Send</button>
+            </div>
+        </div>
+        <div class="panel" data-model="gemini">
+            <div class="panel-header">
+                <span>Gemini</span>
+                <span class="status-indicator" data-status="gemini"></span>
+            </div>
+            <div class="messages"></div>
+            <div class="input-area">
+                <input type="text" placeholder="Type a message...">
+                <button>Send</button>
+            </div>
+        </div>
+        <div class="panel" data-model="deepseek">
+            <div class="panel-header">
+                <span>DeepSeek</span>
+                <span class="status-indicator" data-status="deepseek"></span>
+            </div>
+            <div class="messages"></div>
+            <div class="input-area">
+                <input type="text" placeholder="Type a message...">
+                <button>Send</button>
+            </div>
+        </div>
+        <div class="panel" data-model="copilot">
+            <div class="panel-header">
+                <span>GitHub Copilot</span>
+                <span class="status-indicator" data-status="copilot"></span>
+            </div>
+            <div class="messages"></div>
+            <div class="input-area">
+                <input type="text" placeholder="Type a message...">
+                <button>Send</button>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+
+</html>
