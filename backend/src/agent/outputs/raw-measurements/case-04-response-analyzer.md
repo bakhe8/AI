@@ -1,6 +1,6 @@
 # Raw Measurement Report: JavaScript Code Audit
 
-**Generated:** 2026-01-09T06:45:02.911Z
+**Generated:** 2026-01-09T07:14:29.525Z
 **Type:** Layer 1 Analysis (Measurements Only)
 
 ---
@@ -10,8 +10,8 @@
 - **Models Queried:** 3 (openai, gemini, deepseek)
 - **Facets Analyzed:** 3 (security, performance, quality)
 - **Total Responses:** 9
-- **Successful:** 9
-- **Failed:** 0
+- **Successful:** 2
+- **Failed:** 7
 
 ## Pattern Measurements
 
@@ -19,53 +19,7 @@ No patterns detected (no topics mentioned by 2+ models)
 
 ## Gap Measurements
 
-Gaps = topics some models mentioned but others did not
-
-### security facet
-
-**Topic:** "security"
-- Mentioned by: deepseek
-- **Gap:** Not mentioned by openai, gemini
-
-**Topic:** "vulnerability"
-- Mentioned by: deepseek
-- **Gap:** Not mentioned by openai, gemini
-
-### performance facet
-
-**Topic:** "performance"
-- Mentioned by: deepseek
-- **Gap:** Not mentioned by openai, gemini
-
-**Topic:** "bottleneck"
-- Mentioned by: deepseek
-- **Gap:** Not mentioned by openai, gemini
-
-**Topic:** "complexity"
-- Mentioned by: deepseek
-- **Gap:** Not mentioned by openai, gemini
-
-### quality facet
-
-**Topic:** "complexity"
-- Mentioned by: deepseek
-- **Gap:** Not mentioned by openai, gemini
-
-**Topic:** "code duplication"
-- Mentioned by: deepseek
-- **Gap:** Not mentioned by openai, gemini
-
-**Topic:** "error handling"
-- Mentioned by: deepseek
-- **Gap:** Not mentioned by openai, gemini
-
-**Topic:** "documentation"
-- Mentioned by: deepseek
-- **Gap:** Not mentioned by openai, gemini
-
-**Topic:** "security"
-- Mentioned by: deepseek
-- **Gap:** Not mentioned by openai, gemini
+No gaps detected (all models mentioned similar topics)
 
 ## Contradiction Measurements
 
@@ -75,21 +29,21 @@ No contradictions detected
 
 ### security
 - Total queries: 3
-- Successful: 3
-- Failures: 0
-- Success rate: 100%
+- Successful: 1
+- Failures: 2
+- Success rate: 33%
 
 ### performance
 - Total queries: 3
-- Successful: 3
-- Failures: 0
-- Success rate: 100%
+- Successful: 1
+- Failures: 2
+- Success rate: 33%
 
 ### quality
 - Total queries: 3
-- Successful: 3
-- Failures: 0
-- Success rate: 100%
+- Successful: 0
+- Failures: 3
+- Success rate: 0%
 
 ---
 

@@ -1,6 +1,6 @@
 # Raw Measurement Report: JavaScript Code Audit
 
-**Generated:** 2026-01-09T06:44:42.471Z
+**Generated:** 2026-01-09T07:11:23.814Z
 **Type:** Layer 1 Analysis (Measurements Only)
 
 ---
@@ -10,8 +10,8 @@
 - **Models Queried:** 3 (openai, gemini, deepseek)
 - **Facets Analyzed:** 3 (security, performance, quality)
 - **Total Responses:** 9
-- **Successful:** 0
-- **Failed:** 9
+- **Successful:** 3
+- **Failed:** 6
 
 ## Pattern Measurements
 
@@ -29,21 +29,21 @@ No contradictions detected
 
 ### security
 - Total queries: 3
-- Successful: 0
-- Failures: 3
-- Success rate: 0%
+- Successful: 1
+- Failures: 2
+- Success rate: 33%
 
 ### performance
 - Total queries: 3
-- Successful: 0
-- Failures: 3
-- Success rate: 0%
+- Successful: 1
+- Failures: 2
+- Success rate: 33%
 
 ### quality
 - Total queries: 3
-- Successful: 0
-- Failures: 3
-- Success rate: 0%
+- Successful: 1
+- Failures: 2
+- Success rate: 33%
 
 ---
 
