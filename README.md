@@ -116,6 +116,15 @@ http://localhost:3000/agent-ui/
 - If `HEALTH_TOKEN` is set, the same bearer token is required to access this endpoint.
 - Intended for local debugging only.
 
+### Consultation (Phase 4a, Layer 2 only)
+- Vision doc: `docs/ARCHITECTURAL-VISION.md`; execution plan: `docs/phase-4a-plan.md`.
+- Endpoints (no code apply, no Layer 1 changes):
+  - `POST /consult/start` — `{ question, snapshot, models? }` → `{ consultId, status, models }`
+  - `GET /consult/status/:id` — per-model status/progress
+  - `GET /consult/transcript/:id` — prompt/response per model (no secrets)
+  - `GET /consult/consensus/:id` — Layer 2 summary (agreement/disagreement/gaps/warnings)
+- Guardrails: Readiness stays manual; Health stays token-protected; no context sharing between models; snapshots/transcripts must be sanitized and human-approved.
+
 ### Manual readiness check (user-facing)
 - Endpoint: `POST /api/check-readiness` with optional `{ "model": "openai|deepseek|gemini|copilot" }`.
 - No auth, no tokens. Returns `{ status: "ready" }`, `{ status: "unavailable", reason }`, or `{ status: "busy", reason: "temporary cooldown" }`.

@@ -47,6 +47,7 @@ Must NOT:
 - Require bearer token for health endpoint
 - Cache deep health checks to avoid hammering providers
 - Expose manual readiness check `/api/check-readiness` (no auth, 10s cooldown) to report if a model key is configured without revealing provider details; distinct from operational health.
+- Expose Layer 2 consultation APIs (`/consult/*`) for Phase 4a: start/status/transcript/consensus. These do not modify Layer 1 and must not apply code changes or share context between models.
 
 Must NOT:
 - Modify content

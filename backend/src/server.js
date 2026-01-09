@@ -12,6 +12,7 @@ import { getMemoryStats } from "./core/memory.js";
 import logger from "./core/logger.js";
 import { createAdapterEventEmitter } from "./core/ws-bus.js";
 import { WebSocketServer } from "ws";
+import { startConsultation, getConsultationStatus, getConsultationTranscript, getConsultationConsensus } from "./consultation/controller.js";
 
 // Simple auth for health endpoints (enforced when token is set)
 function requireHealthAuth(req, res) {
@@ -60,6 +61,12 @@ app.use((req, res, next) => {
 app.post("/api/chat", chatHandler);
 app.get("/api/messages/:channelId", getMessagesHandler);
 app.post("/api/check-readiness", checkReadiness);
+
+// Consultation (Layer 2 only)
+app.post("/consult/start", startConsultation);
+app.get("/consult/status/:id", getConsultationStatus);
+app.get("/consult/transcript/:id", getConsultationTranscript);
+app.get("/consult/consensus/:id", getConsultationConsensus);
 
 // Agent endpoints
 app.get("/agent/tasks", listAgentTasks);
