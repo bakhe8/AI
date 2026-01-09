@@ -9,6 +9,8 @@ import taskRegistry from '../tasks/task-registry.js';
 import facetLibrary from '../facets/facet-library.js';
 import { PromptBuilder } from '../prompts/prompt-builder.js';
 import { createRunningResponse, createCompleteResponse, createErrorResponse } from '../contracts/agent-response.contract.js';
+import { ResponseAnalyzer } from '../analyzer/response-analyzer.js';
+import { ReportGenerator } from '../reports/report-generator.js';
 
 export class AgentOrchestrator {
     constructor(kernelBaseUrl = 'http://localhost:3000') {
@@ -47,9 +49,20 @@ export class AgentOrchestrator {
             // Store results
             state.results.round1 = round1Results;
 
-            // Basic analysis (Layer 1 - measurements only)
-            const analysis = this.basicAnalysis(round1Results);
+            // ✅ NEW: Enhanced Analysis with Response Analyzer
+            stateManager.updateProgress(executionId, 'analysis');
+            const analysis = ResponseAnalyzer.analyzeRound1(round1Results);
             state.results.analysis = analysis;
+
+            // ✅ NEW: Generate Report
+            stateManager.updateProgress(executionId, 'reporting');
+            const report = ReportGenerator.generateRawReport(
+                taskId,
+                task,
+                round1Results,
+                analysis
+            );
+            state.results.report = report;
 
             // Mark complete
             stateManager.completeTask(executionId);
