@@ -10,6 +10,8 @@ const MODEL_ENV = {
     mock: null
 };
 
+const MODEL_TIMEOUT_MS = 35_000;
+
 function filterModels(models) {
     const unique = Array.from(new Set(models));
     const available = unique.filter(m => MODEL_ENV[m] !== undefined);
@@ -48,7 +50,10 @@ async function runModel(consultId, model, question, snapshot) {
     const messages = buildMessages(question, snapshot);
 
     try {
-        const reply = await adapter.send(messages);
+        const reply = await Promise.race([
+            adapter.send(messages),
+            new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), MODEL_TIMEOUT_MS))
+        ]);
         consultationStore.addTranscript(consultId, {
             model,
             prompt: messages,

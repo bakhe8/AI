@@ -2,6 +2,8 @@ import "dotenv/config";
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 import { chatHandler, getMessagesHandler } from "./api/chat.controller.js";
 import { listAgentTasks, executeAgentTask, getAgentStatus, getAgentResults } from "./api/agent.controller.js";
 import { checkReadiness } from "./api/readiness.controller.js";
@@ -33,6 +35,9 @@ function requireHealthAuth(req, res) {
 // Validate environment variables on startup
 validateEnvironment();
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const publicDir = path.resolve(__dirname, "../../frontend");
+
 const app = express();
 const adapterEvents = createAdapterEventEmitter();
 
@@ -43,9 +48,9 @@ app.use(cors({
 }));
 
 app.use(bodyParser.json());
-app.use(express.static("../frontend"));
-app.use("/agent-ui", express.static("../frontend/agent"));
-app.use("/consult-ui", express.static("../frontend/consultation"));
+app.use(express.static(publicDir));
+app.use("/agent-ui", express.static(path.join(publicDir, "agent")));
+app.use("/consult-ui", express.static(path.join(publicDir, "consultation")));
 
 // Set UTF-8 encoding for all responses
 app.use((req, res, next) => {
