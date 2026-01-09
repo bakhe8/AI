@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Consultation & Consensus</title>
+    <link rel="stylesheet" href="consultation.css">
+</head>
+<body>
+    <header class="top-nav">
+        <div class="brand">Consultation Mode (Layer 2)</div>
+        <div class="nav-actions">
+            <a class="ghost-btn" href="/">Back to Chat</a>
+            <a class="ghost-btn" href="/agent-ui/">Back to Agent</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="card">
+            <h2>Start Consultation</h2>
+            <form id="start-form">
+                <label>Question</label>
+                <textarea id="question" placeholder="Example: هل البنية قابلة للتوسع؟" rows="2"></textarea>
+
+                <label>Snapshot (approved)</label>
+                <textarea id="snapshot" placeholder="Paste approved snapshot here" rows="6"></textarea>
+
+                <label>Models (independent, no shared context)</label>
+                <div class="model-list">
+                    <label><input type="checkbox" value="openai" checked> OpenAI</label>
+                    <label><input type="checkbox" value="deepseek" checked> DeepSeek</label>
+                    <label><input type="checkbox" value="gemini"> Gemini</label>
+                    <label><input type="checkbox" value="copilot"> Copilot</label>
+                    <label><input type="checkbox" value="mock"> Mock</label>
+                </div>
+
+                <button type="submit" class="primary-btn">Start Consultation</button>
+                <span id="current-id" class="pill muted"></span>
+                <div id="start-error" class="error"></div>
+            </form>
+        </section>
+
+        <section class="grid">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Status</h3>
+                    <button id="refresh-btn" class="ghost-btn" type="button">Refresh</button>
+                </div>
+                <ul id="status-list" class="status-list"></ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Consensus (Layer 2)</h3>
+                </div>
+                <div id="consensus" class="consensus"></div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-header">
+                <h3>Transcripts (Prompt → Response)</h3>
+            </div>
+            <div id="transcripts" class="transcripts"></div>
+        </section>
+
+        <section class="card">
+            <div class="card-header">
+                <h3>Decision Gate (no auto-apply)</h3>
+            </div>
+            <div class="decision">
+                <div class="actions">
+                    <button id="approve-btn" class="primary-btn" type="button">✅ Approve (analysis/plan only)</button>
+                    <button id="reask-btn" class="ghost-btn" type="button">🔄 Re-ask (requires new guidance)</button>
+                    <button id="stop-btn" class="ghost-btn danger" type="button">⛔ Stop</button>
+                </div>
+                <label>Re-ask guidance (required for re-ask)</label>
+                <textarea id="reask-input" placeholder="مثال: افحص من زاوية الأمن فقط" rows="2"></textarea>
+                <div id="decision-note" class="pill muted"></div>
+            </div>
+        </section>
+    </main>
+
+    <script src="consultation.js"></script>
+</body>
+</html>

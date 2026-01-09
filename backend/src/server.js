@@ -45,6 +45,7 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(express.static("../frontend"));
 app.use("/agent-ui", express.static("../frontend/agent"));
+app.use("/consult-ui", express.static("../frontend/consultation"));
 
 // Set UTF-8 encoding for all responses
 app.use((req, res, next) => {

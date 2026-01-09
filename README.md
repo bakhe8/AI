@@ -96,6 +96,14 @@ http://localhost:3000
 http://localhost:3000/agent-ui/
 ```
 
+- Consultation UI (Phase 4a Layer 2) is separate at:
+
+```text
+http://localhost:3000/consult-ui/
+```
+
+- Navigation is “link-only”: Chat ↔ Agent ↔ Consultation do not share state or CSS.
+
 - Navigation is “link-only”: Chat UI has a button “Switch to Agent Mode”; Agent UI has “Back to Chat”. No shared state or CSS.
 
 ### Real-time updates (WebSocket)

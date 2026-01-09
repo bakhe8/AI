@@ -51,6 +51,7 @@ Guardrails:
   - Consensus panel (Agreement/Disagreement/Gaps/Warnings).
   - Decision Gate (Layer 2 only): ✅ Approve (analysis/plan only), 🔄 Re-ask (requires guidance), ⛔ Stop.
 - No prompts/editing in-model; single run per request; no auto-apply.
+- Location: `/consult-ui/` served statically; no shared state/CSS with other UIs.
 
 ---
 

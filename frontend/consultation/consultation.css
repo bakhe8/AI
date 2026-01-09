@@ -1,0 +1,156 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0d1117;
+    color: #e6edf3;
+}
+
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #161b22;
+    border-bottom: 1px solid #30363d;
+}
+
+.brand {
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+.nav-actions a {
+    margin-left: 8px;
+}
+
+main {
+    max-width: 1100px;
+    margin: 16px auto;
+    padding: 0 12px 24px;
+}
+
+.card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+label {
+    display: block;
+    margin: 8px 0 4px;
+    font-size: 14px;
+    color: #9fb1c5;
+}
+
+textarea {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid #30363d;
+    background: #0d1117;
+    color: #e6edf3;
+    padding: 10px;
+    resize: vertical;
+    min-height: 40px;
+}
+
+.model-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.primary-btn, .ghost-btn {
+    cursor: pointer;
+    border-radius: 8px;
+    padding: 8px 12px;
+    border: 1px solid #30363d;
+    background: #238636;
+    color: #fff;
+}
+
+.primary-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.ghost-btn {
+    background: transparent;
+    color: #e6edf3;
+}
+
+.ghost-btn.danger {
+    border-color: #f85149;
+    color: #f85149;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 12px;
+}
+
+.status-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.status-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #21262d;
+}
+
+.pill {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 4px 8px;
+    font-size: 12px;
+    border: 1px solid #30363d;
+}
+
+.pill.ready { border-color: #2ea043; color: #2ea043; }
+.pill.running { border-color: #c69026; color: #c69026; }
+.pill.error { border-color: #f85149; color: #f85149; }
+.pill.muted { color: #9fb1c5; border-color: #30363d; }
+
+.transcripts .entry {
+    border-top: 1px solid #21262d;
+    padding: 12px 0;
+}
+
+.transcripts pre {
+    background: #0d1117;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    padding: 10px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+}
+
+.consensus h4 {
+    margin: 8px 0 4px;
+}
+
+.error {
+    color: #f85149;
+    font-size: 13px;
+    margin-top: 6px;
+}
+
+.decision .actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
