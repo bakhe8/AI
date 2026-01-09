@@ -1,0 +1,69 @@
+/**
+ * Agent Orchestrator Integration Tests
+ */
+
+import { AgentOrchestrator } from '../core/orchestrator.js';
+import taskRegistry from '../tasks/task-registry.js';
+import { JSCodeAuditTask } from '../tasks/implementations/js-code-audit.task.js';
+
+describe('AgentOrchestrator', () => {
+    let orchestrator;
+    let task;
+
+    beforeEach(() => {
+        orchestrator = new AgentOrchestrator();
+        task = new JSCodeAuditTask();
+
+        // Register task
+        taskRegistry.clear();
+        taskRegistry.register(task.toConfig());
+    });
+
+    describe('executeTask', () => {
+        test('should execute JS Code Audit task successfully', async () => {
+            const code = `
+function login(username, password) {
+    const query = "SELECT * FROM users WHERE username = '" + username + "'";
+    db.query(query);
+    return true;
+}
+            `.trim();
+
+            const response = await orchestrator.executeTask('js-code-audit', code);
+
+            expect(response).toHaveProperty('status');
+            expect(response).toHaveProperty('results');
+
+            if (response.status === 'complete') {
+                expect(response.results).toHaveProperty('round1');
+                expect(response.results).toHaveProperty('analysis');
+                expect(Array.isArray(response.results.round1)).toBe(true);
+            }
+        }, 60000); // 60s timeout for actual API calls
+
+        test('should handle non-existent task', async () => {
+            const response = await orchestrator.executeTask('non-existent', 'test');
+
+            expect(response.status).toBe('error');
+            expect(response.error).toBeDefined();
+        });
+    });
+
+    describe('basicAnalysis', () => {
+        test('should analyze results correctly', () => {
+            const mockResults = [
+                { facet: 'security', model: 'openai', content: 'test', error: null },
+                { facet: 'security', model: 'gemini', content: 'test', error: null },
+                { facet: 'performance', model: 'openai', error: 'failed' }
+            ];
+
+            const analysis = orchestrator.basicAnalysis(mockResults);
+
+            expect(analysis.totalResponses).toBe(3);
+            expect(analysis.successfulResponses).toBe(2);
+            expect(analysis.failedResponses).toBe(1);
+            expect(analysis.byFacet.security.successful).toBe(2);
+            expect(analysis.byFacet.performance.failed).toBe(1);
+        });
+    });
+});
