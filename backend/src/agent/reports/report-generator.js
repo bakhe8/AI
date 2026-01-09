@@ -171,7 +171,7 @@ export class ReportGenerator {
             lines.push(`### ${facet}`);
             lines.push(`- Total queries: ${coverage.total}`);
             lines.push(`- Successful: ${coverage.successful}`);
-            lines.push(`- Failed: ${coverage.failed}`);
+            lines.push(`- Failures: ${coverage.failed}`);  // Changed from 'Failed' to 'Failures'
             lines.push(`- Success rate: ${coverage.percentage}%`);
             lines.push('');
         }

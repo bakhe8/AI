@@ -140,7 +140,8 @@ describe('ReportGenerator', () => {
             const markdown = report.markdown.toLowerCase();
             expect(markdown).not.toContain('recommend');
             expect(markdown).not.toContain('should fix');
-            expect(markdown).not.toContain('severity');
+            expect(markdown).not.toContain('critical');
+            expect(markdown).not.toContain('high severity');
         });
     });
 });

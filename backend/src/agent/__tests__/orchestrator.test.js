@@ -37,7 +37,15 @@ function login(username, password) {
             if (response.status === 'complete') {
                 expect(response.results).toHaveProperty('round1');
                 expect(response.results).toHaveProperty('analysis');
+                expect(response.results).toHaveProperty('report');
                 expect(Array.isArray(response.results.round1)).toBe(true);
+
+                // Verify new analysis structure
+                expect(response.results.analysis).toHaveProperty('patterns');
+                expect(response.results.analysis).toHaveProperty('gaps');
+
+                // Verify report
+                expect(response.results.report).toHaveProperty('markdown');
             }
         }, 60000); // 60s timeout for actual API calls
 

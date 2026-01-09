@@ -52,7 +52,20 @@ app.listen(3000);
             // Verify structure
             expect(response.results).toHaveProperty('round1');
             expect(response.results).toHaveProperty('analysis');
+            expect(response.results).toHaveProperty('report');
             expect(Array.isArray(response.results.round1)).toBe(true);
+
+            // Verify analysis has new structure
+            expect(response.results.analysis).toHaveProperty('patterns');
+            expect(response.results.analysis).toHaveProperty('gaps');
+            expect(response.results.analysis).toHaveProperty('contradictions');
+            expect(response.results.analysis).toHaveProperty('coverage');
+
+            // Verify report structure
+            expect(response.results.report).toHaveProperty('metadata');
+            expect(response.results.report).toHaveProperty('summary');
+            expect(response.results.report).toHaveProperty('measurements');
+            expect(response.results.report).toHaveProperty('markdown');
 
             // Should have responses for 3 facets × 3 models = 9 responses
             expect(response.results.round1.length).toBeGreaterThan(0);
