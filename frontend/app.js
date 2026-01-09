@@ -21,7 +21,8 @@ let pageHidden = false;
 const HEALTH_TOKEN = (typeof localStorage !== 'undefined' && localStorage.getItem('health_token')) || null;
 const ENABLE_HEALTH_STATUS = !!HEALTH_TOKEN;
 let ws;
-let ws;
+let wsConnected = false;
+let healthNoticeShown = false;
 
 // Track page visibility to reduce unnecessary polling
 document.addEventListener('visibilitychange', () => {
@@ -31,8 +32,9 @@ document.addEventListener('visibilitychange', () => {
 // Check adapter health status on load and start WS
 if (ENABLE_HEALTH_STATUS) {
     updateAdapterStatus();
+} else {
+    showHealthTokenNotice();
 }
-initWebSocket();
 initWebSocket();
 
 const panelState = new Map();
@@ -53,9 +55,9 @@ document.querySelectorAll('.panel').forEach((panel, index) => {
     // Load existing messages from backend
     loadMessages(channelId, messagesContainer);
 
-    // Auto-refresh messages every POLL_INTERVAL_MS (only if not processing and page visible)
+    // Auto-refresh messages every POLL_INTERVAL_MS (only if not processing, page visible, and WS not connected)
     setInterval(() => {
-        if (!processingState.get(channelId) && !pageHidden) {
+        if (!processingState.get(channelId) && !pageHidden && !wsConnected) {
             loadMessages(channelId, messagesContainer);
         }
     }, POLL_INTERVAL_MS);
@@ -75,6 +77,7 @@ function initWebSocket() {
 
         ws.onopen = () => {
             console.log('WebSocket connected');
+            wsConnected = true;
         };
 
         ws.onmessage = (event) => {
@@ -97,11 +100,21 @@ function initWebSocket() {
 
         ws.onclose = () => {
             console.warn('WebSocket disconnected, retrying in 5s');
+            wsConnected = false;
             setTimeout(initWebSocket, 5000);
         };
     } catch (err) {
         console.error('Failed to initialize WebSocket', err);
     }
+}
+
+function showHealthTokenNotice() {
+    if (healthNoticeShown) return;
+    healthNoticeShown = true;
+    const note = document.createElement('div');
+    note.className = 'health-token-notice';
+    note.textContent = 'Health indicators disabled: set localStorage.health_token to enable.';
+    document.body.prepend(note);
 }
 
 async function loadMessages(channelId, container) {
@@ -239,7 +252,7 @@ function addMessage(container, role, text, shouldScroll = true) {
 
     // Render Markdown for assistant messages (not for loading or error states)
     if (role === 'assistant' && typeof marked !== 'undefined') {
-        const htmlContent = marked.parse(text);
+        const htmlContent = marked.parse(escapeHtml(text));
         msgDiv.innerHTML = htmlContent;
 
         // Apply syntax highlighting to code blocks
@@ -265,6 +278,15 @@ function addMessage(container, role, text, shouldScroll = true) {
         container.scrollTop = container.scrollHeight;
     }
     return msgDiv;
+}
+
+function escapeHtml(str) {
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }
 
 async function copyMessage(text, button) {

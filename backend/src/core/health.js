@@ -8,7 +8,22 @@ const ENV_MAP = {
     copilot: "GITHUB_TOKEN"
 };
 
+// Cache deep health results to avoid hammering providers
+let lastDeepStatus = null;
+let lastDeepAt = 0;
+const DEEP_CACHE_TTL_MS = 60 * 1000; // 60 seconds
+
+export function resetHealthCache() {
+    lastDeepStatus = null;
+    lastDeepAt = 0;
+}
+
 export async function healthCheck(deep = false) {
+    const now = Date.now();
+    if (deep && lastDeepStatus && now - lastDeepAt < DEEP_CACHE_TTL_MS) {
+        return lastDeepStatus;
+    }
+
     const status = {};
     const env = process.env;
 
@@ -49,8 +64,15 @@ export async function healthCheck(deep = false) {
         }
     }
 
-    return {
+    const payload = {
         status: "ok",
         adapters: status
     };
+
+    if (deep) {
+        lastDeepStatus = payload;
+        lastDeepAt = now;
+    }
+
+    return payload;
 }

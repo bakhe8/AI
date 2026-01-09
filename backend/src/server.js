@@ -72,7 +72,11 @@ app.get("/api/health", async (req, res) => {
 // Memory stats endpoint (for monitoring)
 app.get("/api/memory-stats", (req, res) => {
     if (process.env.NODE_ENV === 'production') {
-        return res.status(403).json({ error: "Forbidden" });
+        return res.status(403).json({ error: "Forbidden", code: 403 });
+    }
+    // Protect if token is set
+    if (process.env.HEALTH_TOKEN) {
+        if (!requireHealthAuth(req, res)) return;
     }
     try {
         const stats = getMemoryStats();

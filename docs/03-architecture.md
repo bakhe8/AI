@@ -29,6 +29,8 @@
 - Capture user input
 - Display conversation history
 - Send and receive unified contract payloads
+- Use WebSocket for live replies (polling is fallback; disabled while WS connected)
+- Escape HTML before rendering Markdown from models to mitigate XSS
 
 Must NOT:
 - Call AI APIs directly
@@ -43,6 +45,7 @@ Must NOT:
 - Enforce neutrality and invariants
 - Push replies over WebSocket to subscribed clients
 - Require bearer token for health endpoint
+- Cache deep health checks to avoid hammering providers
 
 Must NOT:
 - Modify content
@@ -74,3 +77,11 @@ Must NOT:
 ```
 
 All credentials, adapters, and model access live strictly behind this boundary.
+
+---
+
+## 4. Output Layers
+
+- Layer 1 (raw): `backend/src/agent/outputs/raw-measurements` — agent raw data only (no summaries/ratings/recommendations); enforced by policy guard test.
+- Layer 2 (human): `backend/src/agent/outputs/human-reports` — human/management reports.
+- User scope: single-user deployment; chat/messages and WS broadcasts are not isolated. If multi-user support is added, isolation/auth must be introduced.

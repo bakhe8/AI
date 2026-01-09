@@ -9,7 +9,7 @@ jest.unstable_mockModule('../../adapters/registry.js', () => {
 });
 
 const { getAdapter } = await import('../../adapters/registry.js');
-const { healthCheck } = await import('../health.js');
+const { healthCheck, resetHealthCache } = await import('../health.js');
 
 function resetEnv() {
     delete process.env.OPENAI_API_KEY;
@@ -22,6 +22,7 @@ describe('healthCheck', () => {
     beforeEach(() => {
         resetEnv();
         getAdapter.mockReset();
+        resetHealthCache();
     });
 
     afterAll(() => {
@@ -61,5 +62,17 @@ describe('healthCheck', () => {
         expect(typeof status.adapters.openai.latencyMs).toBe('number');
         expect(status.adapters.gemini.status).toBe('unavailable');
         expect(status.adapters.gemini.error).toContain('boom');
+    });
+
+    test('deep check uses cache within TTL', async () => {
+        process.env.OPENAI_API_KEY = 'test';
+        const sendFn = jest.fn().mockResolvedValue({ role: 'assistant', content: 'pong' });
+        getAdapter.mockReturnValue({ send: sendFn });
+
+        const first = await healthCheck(true);
+        const second = await healthCheck(true);
+
+        expect(sendFn).toHaveBeenCalledTimes(1);
+        expect(second).toBe(first); // cached object returned
     });
 });

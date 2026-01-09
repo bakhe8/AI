@@ -242,3 +242,12 @@
         min-height: 250px;
     }
 }
+
+.health-token-notice {
+    background: #fff3cd;
+    color: #8a6d3b;
+    padding: 10px 15px;
+    font-size: 0.9em;
+    border-bottom: 1px solid #f0e1a0;
+    text-align: center;
+}

@@ -50,10 +50,12 @@ http://localhost:3000
 - `/api/health` تتطلب هيدر `Authorization: Bearer <HEALTH_TOKEN>` في جميع البيئات.
 - أضف `HEALTH_TOKEN` إلى ملف `backend/.env`.
 - لتفعيل مؤشرات الحالة في المتصفح: نفّذ في الـ Console `localStorage.setItem('health_token','<token>')` ثم أعد التحميل.
+- الفحص العميق (`?deep=true` أو `HEALTH_ACTIVE_CHECK=true`) يُخزَّن في كاش لمدة 60 ثانية لتقليل استهلاك المزودات.
 
 ## إحصاءات الذاكرة
 - `/api/memory-stats` محجوبة في وضع الإنتاج (403).
 - للاستخدام المحلي فقط أثناء التطوير.
+- إذا كان `HEALTH_TOKEN` مضبوطاً، فالنقطة تتطلب نفس التوكن.
 
 ## استكشاف الأخطاء
 

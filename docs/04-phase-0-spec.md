@@ -52,4 +52,10 @@ No feature outside this document is permitted in Phase 0.
 ## 5. Additional Operational Rules
 - Health endpoint requires bearer token (`HEALTH_TOKEN`) even in development; optional active checks may call providers.
 - Errors are returned in the shape `{ "error": "...", "code": <number> }` for all endpoints.
-- WebSocket push for replies is allowed as a transport optimization; HTTP polling remains a fallback.
+- WebSocket push for replies is allowed as a transport optimization; HTTP polling remains a fallback and is disabled while WS is connected.
+- Deep health checks are cached for 60 seconds to reduce provider calls.
+- Assistant content is HTML-escaped before rendering Markdown to mitigate XSS from model output.
+- Phase 0–2 are frozen APIs: no behavior changes, only bug fixes.
+- Raw output policy: files under `backend/src/agent/outputs/raw-measurements` must not contain summaries/ratings/recommendations/deployment guidance (guard test enforces banned terms).
+- Deployment scope: single-user; no auth/isolation on chat/messages/WS. Multi-user support would require additional isolation/auth.
+- Pre-Phase 3 readiness: set HEALTH_TOKEN + browser token, confirm WS connectivity; add auth/isolation if multi-user; keep Layer 1 raw-only; prepare 3–5 real JS projects for validation; decide on deep health usage vs quota.

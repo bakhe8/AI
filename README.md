@@ -36,6 +36,10 @@ ai-kernel/
 ├─ docs/ # Architecture & contracts (Source of Truth)
 ├─ backend/ # API Gateway + Adapters
 ├─ frontend/ # Single-page UI (4 panels)
+├─ backend/src/agent/outputs/
+│   ├─ raw-measurements/ # Layer 1: agent raw outputs (no summaries/ratings/recommendations)
+│   └─ human-reports/    # Layer 2: human/management reports
+├─ docs/phase-3-plan.md  # Usage Validation plan (Phase 3)
 └─ README.md
 
 ---
@@ -87,16 +91,19 @@ http://localhost:3000
 
 ### Real-time updates (WebSocket)
 - The frontend opens a WebSocket to the backend to receive live replies without polling.
-- Polling remains as a fallback (10s) when WS is disconnected or page is hidden.
+- Polling is disabled while WebSocket is connected, and falls back every 10s if WS disconnects or the page is hidden.
 - Ensure the browser can reach `ws://localhost:3000` (or `wss://` if using HTTPS).
+- Assistant Markdown is rendered after escaping HTML to mitigate XSS from model output.
 
 ### Health endpoint auth
 - `/api/health` requires `Authorization: Bearer <HEALTH_TOKEN>` in all environments.
 - In the browser UI, set `localStorage.setItem('health_token', '<token>')` then reload to enable status indicators.
 - Without the token, the UI skips the health check to avoid 401s.
+- Deep health checks (with `?deep=true` or `HEALTH_ACTIVE_CHECK=true`) are cached for 60s to avoid hitting providers repeatedly.
 
 ### Memory stats endpoint
 - `/api/memory-stats` is available only in non-production environments (returns 403 in production).
+- If `HEALTH_TOKEN` is set, the same bearer token is required to access this endpoint.
 - Intended for local debugging only.
 
 ### Error response shape
@@ -107,6 +114,19 @@ All API errors follow:
   "code": 400
 }
 ```
+
+### Agent outputs policy
+- Layering: `backend/src/agent/outputs/raw-measurements` (Layer 1, agent raw data only) and `backend/src/agent/outputs/human-reports` (Layer 2, human-authored).
+- Rule for raw-measurements: **no summaries, ratings, recommendations, or deployment guidance**. A policy guard test enforces absence of banned terms (`recommend`, `should`, `deploy`, `critical`, `rating`).
+- User scope: The system is intended for a single user; no channel isolation or auth is applied to chat/messages or WebSocket broadcasts. Multi-user scenarios would need added isolation/auth if introduced later.
+
+### Pre-Phase 3 readiness checklist
+- Set `HEALTH_TOKEN` in `backend/.env` and `localStorage.health_token` in the browser; confirm WS connectivity (polling only when WS disconnected/hidden).
+- If more than one user will test, add auth/channel isolation first (current build is single-user with shared channels).
+- Keep Layer 1 outputs in `backend/src/agent/outputs/raw-measurements` raw-only (policy guard enforces banned terms); Layer 2 reserved for human reports.
+- Prepare 3–5 real JS projects/files for validation runs.
+- Decide on deep health usage: enable provider keys and `HEALTH_ACTIVE_CHECK` if desired, or keep disabled to save quota.
+- Model output display is HTML-escaped before Markdown rendering; suitable for external model responses, but strengthen sanitize if needed.
 
 ## 7. Phase 0 Rules (Important)
 During Phase 0, the system MUST NOT:
