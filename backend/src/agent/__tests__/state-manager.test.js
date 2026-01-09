@@ -91,10 +91,16 @@ describe('AgentStateManager', () => {
 
             const state = manager.completeTask('task-1');
 
+            expect(state).toBeDefined();
             expect(state.status).toBe('complete');
             expect(state.stats.endTime).toBeDefined();
             expect(state.stats.duration).toBeGreaterThan(0);
             expect(state.progress.current).toBe(state.progress.total);
+        });
+
+        test('should return null for non-existent task', () => {
+            const state = manager.completeTask('non-existent');
+            expect(state).toBeNull();
         });
     });
 
