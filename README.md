@@ -49,6 +49,10 @@ OPENAI_API_KEY=sk-xxxxxxxx
 GEMINI_API_KEY=AIzaSyxxxxxxxx
 DEEPSEEK_API_KEY=sk-xxxxxxxx
 GITHUB_TOKEN=ghp_xxxxxxxx
+# Required: protect /api/health in all environments
+HEALTH_TOKEN=your-secret-token
+# Optional: enable active (paid) health pings to providers
+HEALTH_ACTIVE_CHECK=false
 ```
 
 ⚠️ Never expose API keys in frontend code.
@@ -79,6 +83,29 @@ The frontend is served by the backend. Open:
 
 ```text
 http://localhost:3000
+```
+
+### Real-time updates (WebSocket)
+- The frontend opens a WebSocket to the backend to receive live replies without polling.
+- Polling remains as a fallback (10s) when WS is disconnected or page is hidden.
+- Ensure the browser can reach `ws://localhost:3000` (or `wss://` if using HTTPS).
+
+### Health endpoint auth
+- `/api/health` requires `Authorization: Bearer <HEALTH_TOKEN>` in all environments.
+- In the browser UI, set `localStorage.setItem('health_token', '<token>')` then reload to enable status indicators.
+- Without the token, the UI skips the health check to avoid 401s.
+
+### Memory stats endpoint
+- `/api/memory-stats` is available only in non-production environments (returns 403 in production).
+- Intended for local debugging only.
+
+### Error response shape
+All API errors follow:
+```json
+{
+  "error": "message",
+  "code": 400
+}
 ```
 
 ## 7. Phase 0 Rules (Important)

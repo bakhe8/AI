@@ -6,7 +6,9 @@
 
 ```
 [ Browser UI ]
-      |
+      |  \
+      |   \ WebSocket (live replies)
+      |    \
       | Unified Contract (JSON)
       v
 [ Core API Gateway ]
@@ -39,6 +41,8 @@ Must NOT:
 - Validate contract shape
 - Route requests to correct adapter
 - Enforce neutrality and invariants
+- Push replies over WebSocket to subscribed clients
+- Require bearer token for health endpoint
 
 Must NOT:
 - Modify content

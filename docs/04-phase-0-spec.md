@@ -46,3 +46,10 @@ Phase 0 is complete when:
 ## 4. Phase Lock
 
 No feature outside this document is permitted in Phase 0.
+
+---
+
+## 5. Additional Operational Rules
+- Health endpoint requires bearer token (`HEALTH_TOKEN`) even in development; optional active checks may call providers.
+- Errors are returned in the shape `{ "error": "...", "code": <number> }` for all endpoints.
+- WebSocket push for replies is allowed as a transport optimization; HTTP polling remains a fallback.

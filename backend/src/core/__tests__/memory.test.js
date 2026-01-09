@@ -1,14 +1,11 @@
 // Memory Management Tests
 
-import { addMessage, getMessages, clearMessages, getMemoryStats } from '../memory.js';
+import { addMessage, getMessages, clearMessages, getMemoryStats, clearAllChannels } from '../memory.js';
 
 describe('Memory Management', () => {
     beforeEach(() => {
         // Clear all channels before each test
-        const stats = getMemoryStats();
-        stats.channelDetails.forEach(channel => {
-            clearMessages(channel.channelId);
-        });
+        clearAllChannels();
     });
 
     describe('addMessage', () => {
@@ -92,23 +89,15 @@ describe('Memory Management', () => {
             const stats = getMemoryStats();
 
             expect(stats.totalChannels).toBe(2);
-            expect(stats.channelDetails).toHaveLength(2);
-
-            // Find each channel
-            const channel1 = stats.channelDetails.find(c => c.channelId === 'channel-1');
-            const channel2 = stats.channelDetails.find(c => c.channelId === 'channel-2');
-
-            expect(channel1).toHaveProperty('messageCount', 1);
-            expect(channel2).toHaveProperty('messageCount', 2);
-            expect(channel1).toHaveProperty('lastActivityHoursAgo');
-            expect(channel2).toHaveProperty('lastActivityHoursAgo');
+            expect(stats.totalMessages).toBe(3);
+            expect(stats.maxMessagesPerChannel).toBeGreaterThan(0);
         });
 
         test('should return empty stats when no channels', () => {
             const stats = getMemoryStats();
 
             expect(stats.totalChannels).toBe(0);
-            expect(stats.channelDetails).toEqual([]);
+            expect(stats.totalMessages).toBe(0);
         });
     });
 });

@@ -10,7 +10,9 @@ const OPTIONAL_VARS = [
     'OPENAI_API_KEY',
     'GEMINI_API_KEY',
     'DEEPSEEK_API_KEY',
-    'GITHUB_TOKEN'
+    'GITHUB_TOKEN',
+    'HEALTH_TOKEN',
+    'HEALTH_ACTIVE_CHECK'
 ];
 
 // Model configuration variables (have defaults)

@@ -16,8 +16,24 @@ if (typeof marked !== 'undefined') {
     });
 }
 
-// Check adapter health status on load
-updateAdapterStatus();
+const POLL_INTERVAL_MS = 10000;
+let pageHidden = false;
+const HEALTH_TOKEN = (typeof localStorage !== 'undefined' && localStorage.getItem('health_token')) || null;
+const ENABLE_HEALTH_STATUS = !!HEALTH_TOKEN;
+let ws;
+let ws;
+
+// Track page visibility to reduce unnecessary polling
+document.addEventListener('visibilitychange', () => {
+    pageHidden = document.visibilityState === 'hidden';
+});
+
+// Check adapter health status on load and start WS
+if (ENABLE_HEALTH_STATUS) {
+    updateAdapterStatus();
+}
+initWebSocket();
+initWebSocket();
 
 const panelState = new Map();
 const processingState = new Map(); // Track if panel is processing a message
@@ -37,12 +53,12 @@ document.querySelectorAll('.panel').forEach((panel, index) => {
     // Load existing messages from backend
     loadMessages(channelId, messagesContainer);
 
-    // Auto-refresh messages every 3 seconds (only if not processing)
+    // Auto-refresh messages every POLL_INTERVAL_MS (only if not processing and page visible)
     setInterval(() => {
-        if (!processingState.get(channelId)) {
+        if (!processingState.get(channelId) && !pageHidden) {
             loadMessages(channelId, messagesContainer);
         }
-    }, 3000);
+    }, POLL_INTERVAL_MS);
 
     button.addEventListener('click', () => sendMessage(panel, channelId, model, input, messagesContainer, button));
     input.addEventListener('keypress', (e) => {
@@ -51,6 +67,42 @@ document.querySelectorAll('.panel').forEach((panel, index) => {
         }
     });
 });
+
+function initWebSocket() {
+    try {
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        ws = new WebSocket(`${wsProtocol}://${window.location.host}`);
+
+        ws.onopen = () => {
+            console.log('WebSocket connected');
+        };
+
+        ws.onmessage = (event) => {
+            try {
+                const msg = JSON.parse(event.data);
+                if (msg.type === 'reply' && msg.data) {
+                    const { channel_id, reply } = msg.data;
+                    const panel = document.getElementById(channel_id);
+                    if (!panel) return;
+                    const messagesContainer = panel.querySelector('.messages');
+                    const history = panelState.get(channel_id) || [];
+                    addMessage(messagesContainer, 'assistant', reply.content);
+                    history.push({ role: 'assistant', content: reply.content });
+                    panelState.set(channel_id, history);
+                }
+            } catch (err) {
+                console.error('Failed to handle WS message', err);
+            }
+        };
+
+        ws.onclose = () => {
+            console.warn('WebSocket disconnected, retrying in 5s');
+            setTimeout(initWebSocket, 5000);
+        };
+    } catch (err) {
+        console.error('Failed to initialize WebSocket', err);
+    }
+}
 
 async function loadMessages(channelId, container) {
     try {
@@ -90,16 +142,23 @@ async function loadMessages(channelId, container) {
 }
 
 async function updateAdapterStatus() {
+    if (!ENABLE_HEALTH_STATUS) return;
     try {
-        const response = await fetch('/api/health');
+        const response = await fetch('/api/health', {
+            headers: {
+                'Authorization': `Bearer ${HEALTH_TOKEN}`
+            }
+        });
         const status = await response.json();
 
         // Update status indicators
         document.querySelectorAll('.status-indicator').forEach(indicator => {
             const model = indicator.dataset.status;
-            if (status[model]) {
-                indicator.className = `status-indicator ${status[model].configured ? 'online' : 'offline'}`;
-                indicator.title = status[model].message;
+            const adapter = status.adapters?.[model];
+            if (adapter) {
+                const isOnline = adapter.status === 'available';
+                indicator.className = `status-indicator ${isOnline ? 'online' : 'offline'}`;
+                indicator.title = isOnline ? 'Available' : 'Unavailable';
             }
         });
     } catch (e) {
@@ -134,7 +193,9 @@ async function sendMessage(panel, channelId, model, input, messagesContainer, bu
             body: JSON.stringify({
                 channel_id: channelId,
                 model: model,
-                messages: history
+                messages: [
+                    { role: 'user', content: text }
+                ]
             })
         });
 
@@ -147,15 +208,10 @@ async function sendMessage(panel, channelId, model, input, messagesContainer, bu
             addMessage(messagesContainer, 'assistant', data.reply.content);
             history.push({ role: 'assistant', content: data.reply.content });
         } else if (data.error) {
-            // Display user-friendly error message
-            const errorMsg = data.error.includes('not configured')
-                ? `⚠️ ${model.toUpperCase()}: API key not configured`
-                : `⚠️ Error: ${data.error}`;
-            addMessage(messagesContainer, 'error', errorMsg);
-            history.push({ role: 'assistant', content: errorMsg });
+            const errorMsg = data.code ? `${data.error} (code ${data.code})` : data.error;
+            addMessage(messagesContainer, 'error', `⚠️ ${errorMsg}`);
         } else {
             addMessage(messagesContainer, 'error', '⚠️ Unknown error occurred');
-            history.push({ role: 'assistant', content: '⚠️ Unknown error occurred' });
         }
 
     } catch (e) {
@@ -165,7 +221,6 @@ async function sendMessage(panel, channelId, model, input, messagesContainer, bu
         }
         console.error('Network error:', e);
         addMessage(messagesContainer, 'error', '⚠️ Network error: Unable to connect to server');
-        history.push({ role: 'assistant', content: '⚠️ Network error: Unable to connect to server' });
     } finally {
         // Re-enable input and clear processing flag
         processingState.set(channelId, false);

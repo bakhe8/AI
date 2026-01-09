@@ -23,7 +23,7 @@ describe('Contract Validation', () => {
             };
 
             expect(() => validateContract(invalidPayload))
-                .toThrow('Missing channel_id');
+                .toThrow('channel_id must be a non-empty string');
         });
 
         test('should reject missing model', () => {
@@ -33,7 +33,7 @@ describe('Contract Validation', () => {
             };
 
             expect(() => validateContract(invalidPayload))
-                .toThrow('Missing model');
+                .toThrow('model must be a non-empty string');
         });
 
         test('should reject missing messages', () => {
@@ -43,7 +43,7 @@ describe('Contract Validation', () => {
             };
 
             expect(() => validateContract(invalidPayload))
-                .toThrow('Missing messages');
+                .toThrow('messages must be an array');
         });
 
         test('should reject empty messages array', () => {
@@ -68,6 +68,42 @@ describe('Contract Validation', () => {
 
             expect(() => validateContract(invalidPayload))
                 .toThrow('Each message must have role and content');
+        });
+
+        test('should reject invalid model', () => {
+            const invalidPayload = {
+                channel_id: 'test-channel',
+                model: 'unknown-model',
+                messages: [{ role: 'user', content: 'Hello' }]
+            };
+
+            expect(() => validateContract(invalidPayload))
+                .toThrow(/Invalid model/);
+        });
+
+        test('should reject invalid channel_id characters', () => {
+            const invalidPayload = {
+                channel_id: 'bad channel!',
+                model: 'openai',
+                messages: [{ role: 'user', content: 'Hello' }]
+            };
+
+            expect(() => validateContract(invalidPayload))
+                .toThrow('channel_id contains invalid characters');
+        });
+
+        test('should reject when last message is not from user', () => {
+            const invalidPayload = {
+                channel_id: 'test-channel',
+                model: 'openai',
+                messages: [
+                    { role: 'user', content: 'Hello' },
+                    { role: 'assistant', content: 'Hi there!' }
+                ]
+            };
+
+            expect(() => validateContract(invalidPayload))
+                .toThrow('Last message must be from user');
         });
 
         test('should accept complex valid messages', () => {

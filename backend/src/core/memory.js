@@ -44,6 +44,12 @@ export function clearMessages(channelId) {
     channelLastActivity.delete(channelId);
 }
 
+// Test/helper: clear all channels (not exposed via API)
+export function clearAllChannels() {
+    channelMessages.clear();
+    channelLastActivity.clear();
+}
+
 /**
  * Cleanup job: Remove inactive channels that haven't been accessed
  * for more than CHANNEL_TTL_HOURS
@@ -78,19 +84,12 @@ export function cleanupInactiveChannels() {
 export function getMemoryStats() {
     const stats = {
         totalChannels: channelMessages.size,
-        channelDetails: []
+        totalMessages: 0,
+        maxMessagesPerChannel: MAX_MESSAGES_PER_CHANNEL
     };
 
-    for (const [channelId, messages] of channelMessages.entries()) {
-        const lastActivity = channelLastActivity.get(channelId) || 0;
-        const inactiveMs = Date.now() - lastActivity;
-        const inactiveHours = Math.round(inactiveMs / (1000 * 60 * 60) * 10) / 10;
-
-        stats.channelDetails.push({
-            channelId,
-            messageCount: messages.length,
-            lastActivityHoursAgo: inactiveHours
-        });
+    for (const messages of channelMessages.values()) {
+        stats.totalMessages += messages.length;
     }
 
     return stats;

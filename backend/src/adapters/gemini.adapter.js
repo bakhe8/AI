@@ -1,7 +1,8 @@
-import { formatAdapterError } from "../core/error-handler.js";
+import { ApiError } from "../core/error-handler.js";
 
 // Gemini API configuration
 const API_URL = "https://generativelanguage.googleapis.com/v1beta/models";
+const REQUEST_TIMEOUT_MS = 30000;
 
 export const geminiAdapter = {
     async send(messages) {
@@ -9,8 +10,11 @@ export const geminiAdapter = {
         const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
 
         if (!apiKey) {
-            return formatAdapterError(new Error("GEMINI_API_KEY not configured in .env"));
+            throw new ApiError("GEMINI_API_KEY not configured in .env", 503);
         }
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
         try {
             // Convert Kernel messages to Gemini format
@@ -22,7 +26,7 @@ export const geminiAdapter = {
                 }));
 
             if (contents.length === 0) {
-                throw new Error("Invalid message history");
+                throw new ApiError("Invalid message history", 400);
             }
 
             const payload = { contents };
@@ -34,12 +38,13 @@ export const geminiAdapter = {
                     "Content-Type": "application/json",
                     "x-goog-api-key": apiKey
                 },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(payload),
+                signal: controller.signal
             });
 
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(`Gemini API Error: ${response.status} - ${errorText}`);
+                throw new ApiError(`Gemini API Error: ${response.status} - ${errorText}`, response.status || 502);
             }
 
             const data = await response.json();
@@ -49,7 +54,7 @@ export const geminiAdapter = {
             const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
             if (!text) {
-                throw new Error("Invalid response structure from Gemini API");
+                throw new ApiError("Invalid response structure from Gemini API", 502);
             }
 
             return {
@@ -59,7 +64,15 @@ export const geminiAdapter = {
 
         } catch (error) {
             console.error("Gemini Adapter Error:", error);
-            return formatAdapterError(error);
+            if (error.name === "AbortError") {
+                throw new ApiError("Gemini request timed out", 504);
+            }
+            if (error instanceof ApiError) {
+                throw error;
+            }
+            throw new ApiError(error.message || "Gemini request failed", 502);
+        } finally {
+            clearTimeout(timeoutId);
         }
     }
 };

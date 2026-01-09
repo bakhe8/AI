@@ -62,3 +62,16 @@ This contract may ONLY be:
 - Never modified or broken
 
 Any breaking change requires a **new major contract version**.
+
+---
+
+## 5. Error Responses
+
+All API errors use a unified envelope:
+
+```json
+{
+  "error": "message",
+  "code": 400
+}
+```

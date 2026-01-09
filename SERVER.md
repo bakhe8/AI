@@ -46,6 +46,15 @@ Stop-Process -Name node -Force
 http://localhost:3000
 ```
 
+## Health endpoint (محمية دائماً)
+- `/api/health` تتطلب هيدر `Authorization: Bearer <HEALTH_TOKEN>` في جميع البيئات.
+- أضف `HEALTH_TOKEN` إلى ملف `backend/.env`.
+- لتفعيل مؤشرات الحالة في المتصفح: نفّذ في الـ Console `localStorage.setItem('health_token','<token>')` ثم أعد التحميل.
+
+## إحصاءات الذاكرة
+- `/api/memory-stats` محجوبة في وضع الإنتاج (403).
+- للاستخدام المحلي فقط أثناء التطوير.
+
 ## استكشاف الأخطاء
 
 ### السيرفر لا يعمل؟

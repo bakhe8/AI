@@ -1,13 +1,16 @@
 import OpenAI from "openai";
-import { formatAdapterError } from "../core/error-handler.js";
+import { ApiError } from "../core/error-handler.js";
 
 let client = null;
+const REQUEST_TIMEOUT_MS = 30000;
 
 function getClient() {
     if (!client && process.env.GITHUB_TOKEN) {
         client = new OpenAI({
             baseURL: 'https://models.inference.ai.azure.com',
-            apiKey: process.env.GITHUB_TOKEN
+            apiKey: process.env.GITHUB_TOKEN,
+            timeout: REQUEST_TIMEOUT_MS,
+            maxRetries: 2
         });
     }
     return client;
@@ -19,7 +22,7 @@ export const copilotAdapter = {
         const model = process.env.COPILOT_MODEL || "gpt-4o";
 
         if (!copilot) {
-            return formatAdapterError(new Error("GITHUB_TOKEN not configured in .env"));
+            throw new ApiError("GITHUB_TOKEN not configured in .env", 503);
         }
 
         try {
@@ -28,16 +31,25 @@ export const copilotAdapter = {
                 model: model,
                 temperature: 1.0,
                 top_p: 1.0,
-                max_tokens: 1000
+                max_tokens: 1000,
+                timeout: REQUEST_TIMEOUT_MS
             });
+
+            const content = completion?.choices?.[0]?.message?.content;
+            if (!content) {
+                throw new ApiError("Empty response from Copilot", 502);
+            }
 
             return {
                 role: "assistant",
-                content: completion.choices[0].message.content
+                content
             };
         } catch (error) {
             console.error("Copilot Adapter Error:", error);
-            return formatAdapterError(error);
+            if (error instanceof ApiError) {
+                throw error;
+            }
+            throw new ApiError(error.message || "Copilot request failed", 502);
         }
     }
 };
