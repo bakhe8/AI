@@ -25,6 +25,28 @@ body {
     font-weight: bold;
 }
 
+.status-check {
+    margin-left: 8px;
+    padding: 4px 8px;
+    font-size: 12px;
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.status-check.ready {
+    border-color: #22c55e;
+    color: #15803d;
+}
+.status-check.unavailable {
+    border-color: #ef4444;
+    color: #b91c1c;
+}
+.status-check.busy {
+    border-color: #f59e0b;
+    color: #b45309;
+}
+
 #grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);

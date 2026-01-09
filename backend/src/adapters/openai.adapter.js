@@ -27,8 +27,7 @@ export const openAIAdapter = {
         try {
             const completion = await openai.chat.completions.create({
                 model: model,
-                messages: messages,
-                timeout: REQUEST_TIMEOUT_MS
+                messages: messages
             });
 
             const content = completion?.choices?.[0]?.message?.content;

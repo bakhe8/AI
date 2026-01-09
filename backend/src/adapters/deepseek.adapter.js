@@ -28,8 +28,7 @@ export const deepseekAdapter = {
         try {
             const completion = await deepseek.chat.completions.create({
                 messages: messages,
-                model: model,
-                timeout: REQUEST_TIMEOUT_MS
+                model: model
             });
 
             const content = completion?.choices?.[0]?.message?.content;

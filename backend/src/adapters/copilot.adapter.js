@@ -31,8 +31,7 @@ export const copilotAdapter = {
                 model: model,
                 temperature: 1.0,
                 top_p: 1.0,
-                max_tokens: 1000,
-                timeout: REQUEST_TIMEOUT_MS
+                max_tokens: 1000
             });
 
             const content = completion?.choices?.[0]?.message?.content;

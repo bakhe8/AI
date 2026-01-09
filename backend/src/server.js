@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import { chatHandler, getMessagesHandler } from "./api/chat.controller.js";
 import { listAgentTasks, executeAgentTask, getAgentStatus, getAgentResults } from "./api/agent.controller.js";
+import { checkReadiness } from "./api/readiness.controller.js";
 import { healthCheck } from "./core/health.js";
 import { errorMiddleware } from "./core/error-handler.js";
 import { validateEnvironment } from "./core/env-validator.js";
@@ -58,6 +59,7 @@ app.use((req, res, next) => {
 
 app.post("/api/chat", chatHandler);
 app.get("/api/messages/:channelId", getMessagesHandler);
+app.post("/api/check-readiness", checkReadiness);
 
 // Agent endpoints
 app.get("/agent/tasks", listAgentTasks);

@@ -30,6 +30,7 @@ const ENABLE_HEALTH_STATUS = !!HEALTH_TOKEN;
 let ws;
 let wsConnected = false;
 let healthNoticeShown = false;
+const readinessCooldown = new Map();
 
 // Track page visibility to reduce unnecessary polling
 document.addEventListener('visibilitychange', () => {
@@ -53,6 +54,7 @@ document.querySelectorAll('.panel').forEach((panel, index) => {
     const messagesContainer = panel.querySelector('.messages');
     const input = panel.querySelector('input');
     const button = panel.querySelector('button');
+    const readinessBtn = panel.querySelector('.status-check');
 
     // Add unique ID to panel for easy access if needed
     panel.id = channelId;
@@ -75,6 +77,10 @@ document.querySelectorAll('.panel').forEach((panel, index) => {
             sendMessage(panel, channelId, model, input, messagesContainer, button);
         }
     });
+
+    if (readinessBtn) {
+        readinessBtn.addEventListener('click', () => checkReadiness(model, readinessBtn));
+    }
 });
 
 function initWebSocket() {
@@ -314,4 +320,53 @@ async function copyMessage(text, button) {
             button.innerHTML = '📋 Copy';
         }, 2000);
     }
+}
+
+function checkReadiness(model, btn) {
+    const last = readinessCooldown.get(model) || 0;
+    const now = Date.now();
+    if (now - last < 10_000) {
+        btn.textContent = 'Wait...';
+        btn.className = 'status-check busy';
+        setTimeout(() => {
+            btn.textContent = 'Check';
+            btn.className = 'status-check';
+        }, 1500);
+        return;
+    }
+    readinessCooldown.set(model, now);
+    btn.textContent = 'Checking...';
+    btn.className = 'status-check busy';
+
+    fetch('/api/check-readiness', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model })
+    }).then(r => r.json()).then(data => {
+        if (data.status === 'ready') {
+            btn.textContent = 'Ready';
+            btn.className = 'status-check ready';
+        } else if (data.status === 'busy') {
+            btn.textContent = 'Busy';
+            btn.className = 'status-check busy';
+        } else {
+            btn.textContent = 'Not ready';
+            btn.className = 'status-check unavailable';
+        }
+        if (data.reason) {
+            btn.title = data.reason;
+        }
+        setTimeout(() => {
+            btn.textContent = 'Check';
+            btn.className = 'status-check';
+        }, 4000);
+    }).catch(err => {
+        console.error('Readiness check failed', err);
+        btn.textContent = 'Error';
+        btn.className = 'status-check unavailable';
+        setTimeout(() => {
+            btn.textContent = 'Check';
+            btn.className = 'status-check';
+        }, 4000);
+    });
 }
