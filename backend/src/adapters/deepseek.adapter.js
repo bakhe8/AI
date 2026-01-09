@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { formatAdapterError } from "../core/error-handler.js";
 
 let client = null;
 
@@ -15,18 +16,16 @@ function getClient() {
 export const deepseekAdapter = {
     async send(messages) {
         const deepseek = getClient();
-        
+        const model = process.env.DEEPSEEK_MODEL || "deepseek-chat";
+
         if (!deepseek) {
-            return {
-                role: "assistant",
-                content: "Error: DEEPSEEK_API_KEY not configured in .env"
-            };
+            return formatAdapterError(new Error("DEEPSEEK_API_KEY not configured in .env"));
         }
 
         try {
             const completion = await deepseek.chat.completions.create({
                 messages: messages,
-                model: "deepseek-chat",
+                model: model,
             });
 
             return {
@@ -35,10 +34,7 @@ export const deepseekAdapter = {
             };
         } catch (error) {
             console.error("DeepSeek Adapter Error:", error);
-            return {
-                role: "assistant",
-                content: "Error: " + (error.message || "Failed to connect to DeepSeek")
-            };
+            return formatAdapterError(error);
         }
     }
 };

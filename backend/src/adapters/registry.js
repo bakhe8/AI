@@ -9,5 +9,8 @@ export function getAdapter(model) {
     if (model === "gemini") return geminiAdapter;
     if (model === "deepseek") return deepseekAdapter;
     if (model === "copilot") return copilotAdapter;
-    return mockAdapter;
+    if (model === "mock") return mockAdapter;
+
+    // Throw error for unknown models
+    throw new Error(`Unknown model: ${model}`);
 }

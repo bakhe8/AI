@@ -1,14 +1,15 @@
-// Direct REST implementation to match user's CURL command
-const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+import { formatAdapterError } from "../core/error-handler.js";
+
+// Gemini API configuration
+const API_URL = "https://generativelanguage.googleapis.com/v1beta/models";
 
 export const geminiAdapter = {
     async send(messages) {
         const apiKey = process.env.GEMINI_API_KEY;
+        const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+
         if (!apiKey) {
-            return {
-                role: "assistant",
-                content: "Error: GEMINI_API_KEY not configured in .env"
-            };
+            return formatAdapterError(new Error("GEMINI_API_KEY not configured in .env"));
         }
 
         try {
@@ -26,10 +27,12 @@ export const geminiAdapter = {
 
             const payload = { contents };
 
-            const response = await fetch(`${API_URL}?key=${apiKey}`, {
+            // Use x-goog-api-key header instead of query parameter
+            const response = await fetch(`${API_URL}/${model}:generateContent`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "x-goog-api-key": apiKey
                 },
                 body: JSON.stringify(payload)
             });
@@ -56,10 +59,7 @@ export const geminiAdapter = {
 
         } catch (error) {
             console.error("Gemini Adapter Error:", error);
-            return {
-                role: "assistant",
-                content: "Error: " + (error.message || "Gemini API Error")
-            };
+            return formatAdapterError(error);
         }
     }
 };

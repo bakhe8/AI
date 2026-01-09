@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { formatAdapterError } from "../core/error-handler.js";
 
 let client = null;
 
@@ -15,18 +16,16 @@ function getClient() {
 export const copilotAdapter = {
     async send(messages) {
         const copilot = getClient();
-        
+        const model = process.env.COPILOT_MODEL || "gpt-4o";
+
         if (!copilot) {
-            return {
-                role: "assistant",
-                content: "Error: GITHUB_TOKEN not configured in .env"
-            };
+            return formatAdapterError(new Error("GITHUB_TOKEN not configured in .env"));
         }
 
         try {
             const completion = await copilot.chat.completions.create({
                 messages: messages,
-                model: "gpt-4o", // Standard GitHub Model
+                model: model,
                 temperature: 1.0,
                 top_p: 1.0,
                 max_tokens: 1000
@@ -38,10 +37,7 @@ export const copilotAdapter = {
             };
         } catch (error) {
             console.error("Copilot Adapter Error:", error);
-            return {
-                role: "assistant",
-                content: "Error: " + (error.message || "Failed to connect to GitHub Models")
-            };
+            return formatAdapterError(error);
         }
     }
 };

@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { formatAdapterError } from "../core/error-handler.js";
 
 let client = null;
 
@@ -14,17 +15,15 @@ function getClient() {
 export const openAIAdapter = {
     async send(messages) {
         const openai = getClient();
-        
+        const model = process.env.OPENAI_MODEL || "gpt-3.5-turbo";
+
         if (!openai) {
-            return {
-                role: "assistant",
-                content: "Error: OPENAI_API_KEY not configured in .env"
-            };
+            return formatAdapterError(new Error("OPENAI_API_KEY not configured in .env"));
         }
 
         try {
             const completion = await openai.chat.completions.create({
-                model: "gpt-3.5-turbo",
+                model: model,
                 messages: messages,
             });
 
@@ -34,10 +33,7 @@ export const openAIAdapter = {
             };
         } catch (error) {
             console.error("OpenAI Adapter Error:", error);
-            return {
-                role: "assistant",
-                content: "Error: " + (error.message || "Failed to connect to OpenAI")
-            };
+            return formatAdapterError(error);
         }
     }
 };
