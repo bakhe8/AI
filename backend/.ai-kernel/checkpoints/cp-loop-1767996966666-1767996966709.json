@@ -1,0 +1,23 @@
+{
+  "id": "cp-loop-1767996966666-1767996966709",
+  "executionId": "loop-1767996966666",
+  "timestamp": 1767996966709,
+  "state": {
+    "state": {
+      "executionId": "loop-1767996966666",
+      "goal": "improve performance",
+      "currentStep": 1,
+      "totalSteps": 1
+    },
+    "patch": {
+      "id": "patch-1767996966708-error",
+      "step": "step-1",
+      "changes": [],
+      "description": "Optimize performance",
+      "error": "Task 'code-enhancement' not found in registry"
+    },
+    "timestamp": 1767996966709,
+    "preApply": true
+  },
+  "isSafe": true
+}

@@ -5,7 +5,7 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import { chatHandler, getMessagesHandler } from "./api/chat.controller.js";
-import { listAgentTasks, executeAgentTask, getAgentStatus, getAgentResults, getDatabaseStats } from "./api/agent.controller.js";
+import { listAgentTasks, executeAgentTask, getAgentStatus, getAgentResults, getDatabaseStats, startAgentLoop, pauseAgentLoop, resumeAgentLoop, stopAgentLoop, getAgentLoopStatus } from "./api/agent.controller.js";
 import { startSelfReading, getSelfReadingSession, listSelfReadingSessions, endSelfReadingSession } from "./api/self-reading.controller.js";
 import { checkReadiness } from "./api/readiness.controller.js";
 import { healthCheck } from "./core/health.js";
@@ -106,6 +106,13 @@ app.post("/agent/self-reading/session/:sessionId/end", endSelfReadingSession);
 
 // Database stats
 app.get("/api/stats", getDatabaseStats);
+
+// Agent Loop Control
+app.post("/agent/loop/start", startAgentLoop);
+app.post("/agent/loop/pause", pauseAgentLoop);
+app.post("/agent/loop/resume", resumeAgentLoop);
+app.post("/agent/loop/stop", stopAgentLoop);
+app.get("/agent/loop/status", getAgentLoopStatus);
 
 app.get("/api/health", async (req, res) => {
     if (!requireHealthAuth(req, res)) return;
