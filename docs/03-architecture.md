@@ -46,6 +46,7 @@ Must NOT:
 - Push replies over WebSocket to subscribed clients
 - Require bearer token for health endpoint
 - Cache deep health checks to avoid hammering providers
+- Expose manual readiness check `/api/check-readiness` (no auth, 10s cooldown) to report if a model key is configured without revealing provider details; distinct from operational health.
 
 Must NOT:
 - Modify content

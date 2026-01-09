@@ -9,6 +9,11 @@ const MODEL_ENV = {
 const COOLDOWN_MS = 10_000;
 const lastChecks = new Map();
 
+// Test helper to clear cooldown cache between runs
+export function resetReadinessCooldown() {
+    lastChecks.clear();
+}
+
 export function checkReadiness(req, res) {
     const model = (req.body?.model || "").toLowerCase();
     const key = model || "all";

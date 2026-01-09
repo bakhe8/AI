@@ -116,6 +116,12 @@ http://localhost:3000/agent-ui/
 - If `HEALTH_TOKEN` is set, the same bearer token is required to access this endpoint.
 - Intended for local debugging only.
 
+### Manual readiness check (user-facing)
+- Endpoint: `POST /api/check-readiness` with optional `{ "model": "openai|deepseek|gemini|copilot" }`.
+- No auth, no tokens. Returns `{ status: "ready" }`, `{ status: "unavailable", reason }`, or `{ status: "busy", reason: "temporary cooldown" }`.
+- A 10s cooldown prevents spamming; each chat panel has a manual “Check” button that calls this endpoint once per click. No polling or auto-refresh.
+- Readiness is user convenience only and does **not** expose provider details. Operational health remains gated by `HEALTH_TOKEN`.
+
 ### Error response shape
 All API errors follow:
 ```json
