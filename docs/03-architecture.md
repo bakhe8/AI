@@ -85,3 +85,4 @@ All credentials, adapters, and model access live strictly behind this boundary.
 - Layer 1 (raw): `backend/src/agent/outputs/raw-measurements` — agent raw data only (no summaries/ratings/recommendations); enforced by policy guard test.
 - Layer 2 (human): `backend/src/agent/outputs/human-reports` — human/management reports.
 - User scope: single-user deployment; chat/messages and WS broadcasts are not isolated. If multi-user support is added, isolation/auth must be introduced.
+- Auth vs operational protection: no user authentication/channel isolation by design; operational endpoints (health/memory-stats) are token-gated only.

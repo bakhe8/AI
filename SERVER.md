@@ -46,9 +46,9 @@ Stop-Process -Name node -Force
 http://localhost:3000
 ```
 
-## Health endpoint (محمية دائماً)
-- `/api/health` تتطلب هيدر `Authorization: Bearer <HEALTH_TOKEN>` في جميع البيئات.
-- أضف `HEALTH_TOKEN` إلى ملف `backend/.env`.
+## Health endpoint (محمية بالتوكن)
+- السيرفر يعمل بدون HEALTH_TOKEN، لكن الوصول إلى `/api/health` يتطلب هيدر `Authorization: Bearer <HEALTH_TOKEN>` في جميع البيئات.
+- أضف `HEALTH_TOKEN` إلى ملف `backend/.env` (للحماية التشغيلية فقط، وليس شرط تشغيل).
 - لتفعيل مؤشرات الحالة في المتصفح: نفّذ في الـ Console `localStorage.setItem('health_token','<token>')` ثم أعد التحميل.
 - الفحص العميق (`?deep=true` أو `HEALTH_ACTIVE_CHECK=true`) يُخزَّن في كاش لمدة 60 ثانية لتقليل استهلاك المزودات.
 

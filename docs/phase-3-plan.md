@@ -48,7 +48,7 @@ Do multi-model measurements (patterns / gaps / contradictions) add knowledge tha
 ## Guardrails / Do-Nots
 - Do not add facets, auto round 2, UI, or execution “intelligence”.
 - Do not move to Layer 2; Layer 2 is a privilege after data shows need.
-- Phase 0–2 are frozen APIs: only bug fixes permitted.
+- Phase 0–2 are frozen APIs: only bug fixes permitted for kernel contracts/behavior; Agent Layer/Tasks/Facets may evolve without breaking the kernel.
 
 ## Prep Checklist (before running)
 - Set `HEALTH_TOKEN` in backend `.env` and `localStorage.health_token` in browser; confirm WS connectivity (polling fallback only when WS is down/hidden).
@@ -56,3 +56,8 @@ Do multi-model measurements (patterns / gaps / contradictions) add knowledge tha
 - Keep Layer 1 outputs raw-only (Policy Guard enforces banned terms).
 - Prepare 3–5 real JS codes/projects.
 - Decide on deep health usage vs quota (enable keys + `HEALTH_ACTIVE_CHECK` or keep off).
+
+## Phase 3 Operational Workflow
+- Naming for Layer 1 reports: `backend/src/agent/outputs/raw-measurements/case-0X-<short-label>.md` (e.g., `case-01-helper.md`); raw content only (no summaries/ratings/recommendations/deployment guidance). Policy Guard will fail on banned terms (`recommend`, `should`, `deploy`, `critical`, `rating`).
+- Usage notes: `backend/src/agent/outputs/human-reports/phase-3-usage-notes.md` to capture human observations (value vs noise, gaps usefulness).
+- Decision snapshot: a one-page note in Layer 2 with the decision (Continue / Adjust Layer 1 / Pause-Pivot).

@@ -97,6 +97,7 @@ http://localhost:3000
 
 ### Health endpoint auth
 - `/api/health` requires `Authorization: Bearer <HEALTH_TOKEN>` in all environments.
+- This token is **not a startup requirement**; the server runs without it. It only gates access to operational endpoints (health/memory-stats).
 - In the browser UI, set `localStorage.setItem('health_token', '<token>')` then reload to enable status indicators.
 - Without the token, the UI skips the health check to avoid 401s.
 - Deep health checks (with `?deep=true` or `HEALTH_ACTIVE_CHECK=true`) are cached for 60s to avoid hitting providers repeatedly.
@@ -119,6 +120,7 @@ All API errors follow:
 - Layering: `backend/src/agent/outputs/raw-measurements` (Layer 1, agent raw data only) and `backend/src/agent/outputs/human-reports` (Layer 2, human-authored).
 - Rule for raw-measurements: **no summaries, ratings, recommendations, or deployment guidance**. A policy guard test enforces absence of banned terms (`recommend`, `should`, `deploy`, `critical`, `rating`).
 - User scope: The system is intended for a single user; no channel isolation or auth is applied to chat/messages or WebSocket broadcasts. Multi-user scenarios would need added isolation/auth if introduced later.
+- Auth vs operational protection: there is **no user authentication or channel isolation** by design; only operational endpoints (health/memory-stats) use `HEALTH_TOKEN` gating.
 
 ### Pre-Phase 3 readiness checklist
 - Set `HEALTH_TOKEN` in `backend/.env` and `localStorage.health_token` in the browser; confirm WS connectivity (polling only when WS disconnected/hidden).
@@ -127,6 +129,11 @@ All API errors follow:
 - Prepare 3–5 real JS projects/files for validation runs.
 - Decide on deep health usage: enable provider keys and `HEALTH_ACTIVE_CHECK` if desired, or keep disabled to save quota.
 - Model output display is HTML-escaped before Markdown rendering; suitable for external model responses, but strengthen sanitize if needed.
+
+### Phase 3 Operational Workflow
+- Naming: place each Layer 1 report under `backend/src/agent/outputs/raw-measurements/` as `case-0X-<short-label>.md` (e.g., `case-01-helper.md`).
+- Example Layer 1 report: raw agent output only, no summaries/ratings/recommendations/deployment guidance (Policy Guard blocks banned terms: recommend, should, deploy, critical, rating).
+- Layer 2 (human) notes go to `backend/src/agent/outputs/human-reports/phase-3-usage-notes.md` and decision snapshot nearby.
 
 ## 7. Phase 0 Rules (Important)
 During Phase 0, the system MUST NOT:
