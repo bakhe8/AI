@@ -65,6 +65,13 @@ export class AgentOrchestrator {
             );
             state.results.report = report;
 
+            // Check if Round 2 is needed and enabled
+            if (task.rounds >= 2 && this.shouldRunRound2(analysis)) {
+                stateManager.updateProgress(executionId, 'round2', 0);
+                const round2Results = await this.executeRound2(executionId, task, input, round1Results, analysis);
+                state.results.round2 = round2Results;
+            }
+
             // Mark complete
             stateManager.completeTask(executionId);
 
@@ -178,5 +185,98 @@ export class AgentOrchestrator {
         });
 
         return analysis;
+    }
+
+    /**
+     * Check if Round 2 should be executed based on analysis
+     * @param {Object} analysis - Round 1 analysis
+     * @returns {boolean} True if Round 2 should run
+     */
+    shouldRunRound2(analysis) {
+        // Run Round 2 if we have significant gaps or contradictions
+        const hasGaps = analysis.gaps && analysis.gaps.length > 0;
+        const hasContradictions = analysis.contradictions && analysis.contradictions.length > 0;
+        const hasLowCoverage = analysis.coverage && analysis.coverage.overall < 0.7;
+
+        return hasGaps || hasContradictions || hasLowCoverage;
+    }
+
+    /**
+     * Execute Round 2: Deep dive based on Round 1 findings
+     * @param {string} executionId - Execution identifier
+     * @param {Object} task - Task configuration
+     * @param {any} input - Original task input
+     * @param {Array} round1Results - Results from Round 1
+     * @param {Object} analysis - Analysis from Round 1
+     * @returns {Promise<Array>} Round 2 results
+     */
+    async executeRound2(executionId, task, input, round1Results, analysis) {
+        const results = [];
+        let stepCount = 0;
+
+        // Focus on facets with gaps or contradictions
+        const targetFacets = this.identifyRound2Targets(analysis);
+
+        for (const facetId of targetFacets) {
+            // Build targeted prompts for this facet based on gaps
+            const agentPrompt = task.buildRound2Prompt(facetId, round1Results, analysis.gaps);
+
+            // Query models again with targeted questions
+            const facetResults = await this.kernelClient.sendParallel(
+                task.models,
+                agentPrompt,
+                {
+                    taskId: executionId,
+                    facet: facetId,
+                    round: 2
+                }
+            );
+
+            // Increment API calls
+            stateManager.incrementApiCalls(executionId, task.models.length);
+
+            // Store results
+            facetResults.forEach(result => {
+                results.push({
+                    facet: facetId,
+                    model: result.model,
+                    content: result.content,
+                    error: result.error,
+                    metadata: result.metadata,
+                    targetedIssues: analysis.gaps.filter(g => g.facet === facetId)
+                });
+            });
+
+            // Update progress
+            stepCount += task.models.length;
+            stateManager.updateProgress(executionId, 'round2', stepCount);
+        }
+
+        return results;
+    }
+
+    /**
+     * Identify which facets need Round 2 investigation
+     * @param {Object} analysis - Round 1 analysis
+     * @returns {string[]} Facet IDs for Round 2
+     */
+    identifyRound2Targets(analysis) {
+        const targets = new Set();
+
+        // Add facets with gaps
+        if (analysis.gaps) {
+            analysis.gaps.forEach(gap => {
+                if (gap.facet) targets.add(gap.facet);
+            });
+        }
+
+        // Add facets with contradictions
+        if (analysis.contradictions) {
+            analysis.contradictions.forEach(contradiction => {
+                if (contradiction.facet) targets.add(contradiction.facet);
+            });
+        }
+
+        return Array.from(targets);
     }
 }

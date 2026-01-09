@@ -91,6 +91,11 @@ function initWebSocket() {
         ws.onopen = () => {
             console.log('WebSocket connected');
             wsConnected = true;
+            // Reset reconnection attempts on successful connection
+            if (window.wsReconnectAttempts) {
+                console.log('WebSocket reconnected successfully');
+                window.wsReconnectAttempts = 0;
+            }
         };
 
         ws.onmessage = (event) => {
@@ -111,13 +116,24 @@ function initWebSocket() {
             }
         };
 
-        ws.onclose = () => {
-            console.warn('WebSocket disconnected, retrying in 5s');
+        ws.onclose = (event) => {
+            console.warn('WebSocket disconnected');
             wsConnected = false;
-            setTimeout(initWebSocket, 5000);
+            
+            // Implement exponential backoff for reconnection
+            window.wsReconnectAttempts = (window.wsReconnectAttempts || 0) + 1;
+            const delay = Math.min(1000 * Math.pow(2, window.wsReconnectAttempts), 30000); // Max 30 seconds
+            
+            console.log(`Reconnecting in ${delay / 1000}s (attempt ${window.wsReconnectAttempts})`);
+            setTimeout(initWebSocket, delay);
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
         };
     } catch (err) {
         console.error('Failed to initialize WebSocket', err);
+        wsConnected = false;
     }
 }
 

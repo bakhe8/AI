@@ -2,7 +2,7 @@ const MAX_MESSAGES = 50;
 const MAX_MESSAGE_LENGTH = 10000;
 const MAX_CHANNEL_ID_LENGTH = 100;
 const CHANNEL_ID_PATTERN = /^[a-zA-Z0-9_-]+$/;
-const ALLOWED_MODELS = ["openai", "gemini", "deepseek", "copilot", "mock"];
+const ALLOWED_MODELS = ["openai", "gemini", "deepseek", "copilot", "claude", "mock"];
 const ALLOWED_ROLES = ["user", "assistant"];
 
 export function validateContract(body) {

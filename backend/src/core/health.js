@@ -1,11 +1,12 @@
 import { getAdapter } from "../adapters/registry.js";
 
-const MODELS = ["openai", "gemini", "deepseek", "copilot"];
+const MODELS = ["openai", "gemini", "deepseek", "copilot", "claude"];
 const ENV_MAP = {
     openai: "OPENAI_API_KEY",
     gemini: "GEMINI_API_KEY",
     deepseek: "DEEPSEEK_API_KEY",
-    copilot: "GITHUB_TOKEN"
+    copilot: "GITHUB_TOKEN",
+    claude: "ANTHROPIC_API_KEY"
 };
 
 // Cache deep health results to avoid hammering providers

@@ -1,23 +1,36 @@
 # AI Model Communication Kernel
 
-Phase 0 — Raw Communication Kernel  
+**Status**: Phase 0-4 Complete + Enhancements ✅  
+**Last Update**: January 9, 2026  
 Local Development Setup
 
 ---
 
 ## 1. Overview
 
-This project implements a **minimal, neutral communication kernel**
-that enables message exchange between UI panels and AI models via APIs.
+This project implements a **comprehensive AI communication and analysis system** for **personal use**.
 
-The system is intentionally non-intelligent.
-It only transports messages according to a strict unified contract.
+**Key Features**:
+- Message exchange between UI panels and AI models (Phase 0)
+- Multi-model code analysis with Agent System (Phase 1-3)
+- Consultation & Consensus mode for collaborative analysis (Phase 4)
+- Advanced features: Rate limiting, Round 2 analysis, Claude support
+
+**Architecture**:
+The system follows strict layer separation:
+- **Layer 0**: Neutral message transport (Kernel)
+- **Layer 1**: Measurement and detection only (Agent)
+- **Layer 2**: Analysis and decision support (Consultation)
+
+**Single-User Design**: This is a personal productivity tool. No authentication, no user management, no multi-tenant support needed.
 
 All architectural rules are defined in `/docs`.
 
 ---
 
 ## 2. Requirements
+
+**System Type**: Personal productivity tool (single-user) 👤
 
 To run locally, you need:
 
@@ -26,54 +39,117 @@ To run locally, you need:
 - Internet connection (for external AI APIs)
 - A modern web browser
 
-No database, Docker, or cloud services are required.
+**New dependencies**:
+```bash
+npm install @anthropic-ai/sdk
+```
+
+**No need for**:
+- ❌ User authentication system
+- ❌ Database (optional for persistence)
+- ❌ Docker or containers
+- ❌ Cloud services
+- ❌ Multi-user setup
 
 ---
 
-## 3. Project Structure
+## 3. Recent Enhancements (Jan 2026)
+
+### ✨ New Features:
+1. **Claude Support**: Anthropic Claude integration as 6th model
+2. **Rate Limiting**: Protect APIs with configurable rate limits
+3. **Round 2 Agent**: Conditional deep-dive analysis based on Round 1 gaps
+4. **Enhanced Consultation UI**: Side-by-side comparison, export reports
+5. **WebSocket Improvements**: Exponential backoff reconnection logic
+
+### 🔧 Technical Improvements:
+- Better error handling across all adapters
+- Response headers for rate limit info
+- Targeted Round 2 prompts based on analysis
+- Export consultation results as JSON
+- Visual statistics in consensus view
+
+See [DEVELOPMENT-UPDATE-2026-01-09.md](docs/DEVELOPMENT-UPDATE-2026-01-09.md) for details.
+
+---
+
+## 4. Project Structure
 
 ai-kernel/
-├─ docs/ # Architecture & contracts (Source of Truth)
-├─ backend/ # API Gateway + Adapters
-├─ frontend/ # Single-page UI (4 panels)
-├─ frontend/agent/ # Agent Control Panel (Layer 1 UI)
-├─ backend/src/agent/outputs/
-│   ├─ raw-measurements/ # Layer 1: agent raw outputs (no summaries/ratings/recommendations)
-│   └─ human-reports/    # Layer 2: human/management reports
-├─ docs/phase-3-plan.md  # Usage Validation plan (Phase 3)
-└─ README.md
+├─ docs/                    # Architecture & contracts (Source of Truth)
+│   ├─ DEVELOPMENT-UPDATE-2026-01-09.md  # Latest changes
+│   ├─ phase-3-plan.md      # Usage validation
+│   └─ phase-4a-plan.md     # Consultation mode
+├─ backend/                 # API Gateway + Adapters
+│   ├─ src/
+│   │   ├─ adapters/        # 6 models: openai, gemini, deepseek, copilot, claude, mock
+│   │   ├─ agent/           # Agent System (Phase 1-3)
+│   │   ├─ consultation/    # Consultation mode (Phase 4)
+│   │   └─ core/
+│   │       ├─ rate-limiter.js  # NEW: Rate limiting
+│   │       └─ ...
+│   └─ .env                 # Configuration (create this)
+├─ frontend/                # Main UI (4 panels)
+├─ frontend/agent/          # Agent Control Panel
+├─ frontend/consultation/   # Consultation UI (enhanced)
+└─ README.md                # This file
 
 ---
 
-## 4. Environment Variables
+## 5. Environment Variables
 
 Create a `.env` file inside the `backend/` directory:
 
 ```env
+# OpenAI
 OPENAI_API_KEY=sk-xxxxxxxx
+OPENAI_MODEL=gpt-3.5-turbo  # optional
+
+# Google Gemini
 GEMINI_API_KEY=AIzaSyxxxxxxxx
+GEMINI_MODEL=gemini-2.0-flash  # optional
+
+# DeepSeek
 DEEPSEEK_API_KEY=sk-xxxxxxxx
+DEEPSEEK_MODEL=deepseek-chat  # optional
+
+# GitHub Copilot
 GITHUB_TOKEN=ghp_xxxxxxxx
-# Required: protect /api/health in all environments
-HEALTH_TOKEN=your-secret-token
-# Optional: enable active (paid) health pings to providers
-HEALTH_ACTIVE_CHECK=false
+COPILOT_MODEL=gpt-4o  # optional
+
+# Anthropic Claude (NEW)
+ANTHROPIC_API_KEY=sk-ant-xxxxxxxx
+CLAUDE_MODEL=claude-3-5-sonnet-20241022  # optional
+
+# Health & Security
+HEALTH_TOKEN=your-secret-token  # Required: protect /api/health
+HEALTH_ACTIVE_CHECK=false       # Optional: enable deep health checks
+
+# Environment
+NODE_ENV=development
 ```
 
-⚠️ Never expose API keys in frontend code.
+⚠️ **Security Notes**:
+- Never expose API keys in frontend code
+- Keep `.env` file out of version control (already in `.gitignore`)
+- Use environment-specific tokens in production
+- Claude requires `ANTHROPIC_API_KEY` - get from https://console.anthropic.com/
 
-## 5. Running the Backend
+## 6. Running the Backend
 
 ```bash
 cd backend
 npm install
+# NEW: Install Anthropic SDK
+npm install @anthropic-ai/sdk
 node src/server.js
 ```
 
 Expected output:
 
 ```text
-AI Kernel running on :3000
+AI Kernel running on http://localhost:3000
+Press Ctrl+C to stop
 ```
 
 The backend will be available at:

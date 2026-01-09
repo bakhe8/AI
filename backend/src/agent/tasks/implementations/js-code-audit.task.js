@@ -14,7 +14,7 @@ export class JSCodeAuditTask extends BaseTask {
             description: 'Comprehensive audit of JavaScript code covering security, performance, and code quality',
             facets: ['security', 'performance', 'quality'],
             models: ['openai', 'gemini', 'deepseek'],
-            rounds: 1, // Start with 1 round only
+            rounds: 2, // Enable Round 2 for deeper analysis
             outputFormat: 'markdown'
         });
     }
@@ -41,7 +41,45 @@ export class JSCodeAuditTask extends BaseTask {
      * @returns {{system: string, user: string}}
      */
     buildRound2Prompt(facet, round1Results, gaps) {
-        throw new Error('Round 2 not yet implemented for this task');
+        // Extract the original code from Round 1 results
+        const originalCode = round1Results[0]?.metadata?.input || '';
+
+        // Filter gaps relevant to this facet
+        const facetGaps = gaps.filter(gap => 
+            gap.facets && gap.facets.includes(facet)
+        );
+
+        // Build targeted questions based on gaps
+        const gapQuestions = facetGaps.map(gap => 
+            `- ${gap.text} (mentioned by: ${gap.models.join(', ')})`
+        ).join('\n');
+
+        const systemPrompt = `You are a senior code auditor conducting a deep-dive analysis.
+Focus on the ${facet} aspect of the code.
+
+CRITICAL LAYER 1 RULES (STRICTLY ENFORCED):
+- NO recommendations or suggestions
+- NO use of words: "should", "recommend", "fix", "improve", "consider", "suggest"
+- ONLY measure, detect, count, and report what exists
+- Report findings as neutral observations
+
+Previous Round 1 analysis identified these gaps or areas needing clarification:
+${gapQuestions || 'No specific gaps identified, perform general deep analysis'}
+
+Your task: Provide DEEPER MEASUREMENT on these specific areas only.`;
+
+        const userPrompt = `Code to analyze (focused on gaps from Round 1):
+
+\`\`\`javascript
+${originalCode}
+\`\`\`
+
+Focus on addressing the gaps mentioned in your instructions. Measure and detect only.`;
+
+        return {
+            system: systemPrompt,
+            user: userPrompt
+        };
     }
 
     /**
