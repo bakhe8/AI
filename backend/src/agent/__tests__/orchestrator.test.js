@@ -41,11 +41,10 @@ function login(username, password) {
             }
         }, 60000); // 60s timeout for actual API calls
 
-        test('should handle non-existent task', async () => {
-            const response = await orchestrator.executeTask('non-existent', 'test');
-
-            expect(response.status).toBe('error');
-            expect(response.error).toBeDefined();
+        test('should throw for non-existent task', async () => {
+            await expect(
+                orchestrator.executeTask('non-existent', 'test')
+            ).rejects.toThrow(/not found/);
         });
     });
 
