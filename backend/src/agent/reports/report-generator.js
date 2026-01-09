@@ -179,7 +179,7 @@ export class ReportGenerator {
         lines.push('---');
         lines.push('');
         lines.push('**Note:** This is a Layer 1 report (measurements only).');
-        lines.push('No recommendations or severity judgments are included.');
+        lines.push('No judgments or suggested actions are included.');
 
         return lines.join('\n');
     }

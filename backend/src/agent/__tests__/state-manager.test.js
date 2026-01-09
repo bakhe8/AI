@@ -94,7 +94,7 @@ describe('AgentStateManager', () => {
             expect(state).toBeDefined();
             expect(state.status).toBe('complete');
             expect(state.stats.endTime).toBeDefined();
-            expect(state.stats.duration).toBeGreaterThan(0);
+            expect(state.stats.duration).toBeGreaterThanOrEqual(0);  // Can be 0 if very fast
             expect(state.progress.current).toBe(state.progress.total);
         });
 
