@@ -47,7 +47,7 @@ function login(username, password) {
                 // Verify report
                 expect(response.results.report).toHaveProperty('markdown');
             }
-        }, 60000); // 60s timeout for actual API calls
+        }, 90000); // allow slow external API calls
 
         test('should throw for non-existent task', async () => {
             await expect(
