@@ -255,11 +255,19 @@ export class KernelClient {
         body: JSON.stringify(kernelRequest)
       });
       
+      // ✅ NEW: Check HTTP status
       if (!response.ok) {
-        throw new Error(`Kernel returned ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMsg = errorData.error || `HTTP ${response.status}`;
+        throw new Error(`Kernel error: ${errorMsg} (status: ${response.status})`);
       }
       
       const data = await response.json();
+      
+      // ✅ NEW: Validate response shape
+      if (!data || !data.reply || typeof data.reply.content !== 'string') {
+        throw new Error('Invalid response from Kernel');
+      }
       
       return {
         model,
@@ -270,11 +278,9 @@ export class KernelClient {
         }
       };
     } catch (error) {
-      return {
-        model,
-        error: error.message,
-        metadata
-      };
+      // ✅ NEW: Don't return error object - throw!
+      // Agent layer will handle errors appropriately
+      throw new Error(`${model} adapter failed: ${error.message}`);
     }
   }
   
@@ -282,9 +288,19 @@ export class KernelClient {
    * إرسال متوازي لعدة نماذج
    */
   async sendParallel(models, agentPrompt, metadata) {
-    const promises = models.map(model => 
-      this.send(model, agentPrompt, metadata)
-    );
+    const promises = models.map(async (model) => {
+      try {
+        return await this.send(model, agentPrompt, metadata);
+      } catch (error) {
+        // Return error info instead of throwing
+        // So other models can continue
+        return {
+          model,
+          error: error.message,
+          metadata
+        };
+      }
+    });
     
     return Promise.all(promises);
   }
@@ -326,19 +342,42 @@ describe('KernelClient', () => {
     expect(response).toHaveProperty('metadata');
   });
   
-  test('should handle kernel errors gracefully', async () => {
+  test('should throw on kernel errors', async () => {
     const agentPrompt = {
       system: 'Test',
       user: 'Test'
     };
     
-    const response = await client.send('invalid-model', agentPrompt, {
-      taskId: 'test',
-      facet: 'test',
-      round: 1
-    });
+    // ✅ Updated: Expect throw instead of error object
+    await expect(
+      client.send('invalid-model', agentPrompt, {
+        taskId: 'test',
+        facet: 'test',
+        round: 1
+      })
+    ).rejects.toThrow();
+  });
+  
+  test('should handle parallel requests with mixed success/failure', async () => {
+    const agentPrompt = {
+      system: 'Test',
+      user: 'Test'
+    };
     
-    expect(response).toHaveProperty('error');
+    const results = await client.sendParallel(
+      ['openai', 'invalid-model'],
+      agentPrompt,
+      { taskId: 'test', facet: 'test', round: 1 }
+    );
+    
+    // One success, one failure
+    expect(results).toHaveLength(2);
+    
+    const success = results.find(r => !r.error);
+    const failure = results.find(r => r.error);
+    
+    expect(success).toHaveProperty('content');
+    expect(failure).toHaveProperty('error');
   });
 });
 ```
