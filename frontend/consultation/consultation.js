@@ -37,23 +37,69 @@ function renderStatus(models = []) {
 
 function renderTranscripts(data) {
     transcriptsEl.innerHTML = "";
+    
+    // Add comparison toggle
+    if ((data?.transcripts || []).length > 1) {
+        const toggleDiv = document.createElement("div");
+        toggleDiv.className = "view-toggle";
+        toggleDiv.innerHTML = `
+            <button class="toggle-btn" data-view="list">List View</button>
+            <button class="toggle-btn active" data-view="compare">Side-by-Side Compare</button>
+        `;
+        transcriptsEl.appendChild(toggleDiv);
+        
+        toggleDiv.querySelectorAll(".toggle-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                toggleDiv.querySelectorAll(".toggle-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                const view = btn.dataset.view;
+                transcriptsEl.querySelector(".transcripts-container").className = 
+                    view === "compare" ? "transcripts-container compare-view" : "transcripts-container list-view";
+            });
+        });
+    }
+    
+    const container = document.createElement("div");
+    container.className = "transcripts-container compare-view";
+    
     (data?.transcripts || []).forEach(entry => {
-        const container = document.createElement("div");
-        container.className = "entry";
-        const title = document.createElement("div");
-        title.textContent = `${entry.model} — ${new Date(entry.timestamp).toLocaleString()}`;
-        const prompt = document.createElement("pre");
-        prompt.textContent = JSON.stringify(entry.prompt, null, 2);
-        const response = document.createElement("pre");
-        response.className = "code-block";
-        response.textContent = extractCode(entry.response || "");
-        container.append(title);
-        container.append(document.createTextNode("Prompt:"));
-        container.append(prompt);
-        container.append(document.createTextNode("Response:"));
-        container.append(response);
-        transcriptsEl.appendChild(container);
+        const entryDiv = document.createElement("div");
+        entryDiv.className = "entry";
+        
+        const header = document.createElement("div");
+        header.className = "entry-header";
+        header.innerHTML = `
+            <span class="model-badge">${entry.model}</span>
+            <span class="timestamp">${new Date(entry.timestamp).toLocaleString()}</span>
+            <button class="copy-btn" data-content="${escapeHtml(entry.response || '')}">📋 Copy</button>
+        `;
+        entryDiv.appendChild(header);
+        
+        const responseDiv = document.createElement("div");
+        responseDiv.className = "response-content";
+        const responseText = extractCode(entry.response || "");
+        responseDiv.textContent = responseText;
+        entryDiv.appendChild(responseDiv);
+        
+        container.appendChild(entryDiv);
     });
+    
+    transcriptsEl.appendChild(container);
+    
+    // Add copy button listeners
+    transcriptsEl.querySelectorAll(".copy-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const content = btn.dataset.content;
+            navigator.clipboard.writeText(content).then(() => {
+                btn.textContent = "✓ Copied";
+                setTimeout(() => btn.textContent = "📋 Copy", 2000);
+            });
+        });
+    });
+}
+
+function escapeHtml(text) {
+    return text.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 function extractCode(text) {
@@ -67,28 +113,60 @@ function extractCode(text) {
 function renderConsensus(consensus) {
     consensusEl.innerHTML = "";
     if (!consensus) return;
+    
+    // Add summary stats
+    const stats = document.createElement("div");
+    stats.className = "consensus-stats";
+    stats.innerHTML = `
+        <div class="stat-item">
+            <span class="stat-label">Agreement Points</span>
+            <span class="stat-value">${(consensus.agreement || []).length}</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Disagreements</span>
+            <span class="stat-value">${(consensus.disagreements || []).length}</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Gaps</span>
+            <span class="stat-value">${(consensus.gaps || []).length}</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Warnings</span>
+            <span class="stat-value">${(consensus.warnings || []).length}</span>
+        </div>
+    `;
+    consensusEl.appendChild(stats);
+    
     const sections = [
-        ["Agreement", consensus.agreement],
-        ["Disagreements", consensus.disagreements],
-        ["Gaps", consensus.gaps],
-        ["Warnings", consensus.warnings]
+        ["Agreement", consensus.agreement, "✓"],
+        ["Disagreements", consensus.disagreements, "⚠"],
+        ["Gaps", consensus.gaps, "◯"],
+        ["Warnings", consensus.warnings, "!"]
     ];
-    sections.forEach(([title, items]) => {
-        const h = document.createElement("h4");
-        h.textContent = title;
-        consensusEl.appendChild(h);
+    
+    sections.forEach(([title, items, icon]) => {
+        const section = document.createElement("div");
+        section.className = "consensus-section";
+        
+        const header = document.createElement("h4");
+        header.innerHTML = `<span class="section-icon">${icon}</span> ${title}`;
+        section.appendChild(header);
+        
         if (!items || items.length === 0) {
             const empty = document.createElement("div");
             empty.className = "pill muted";
             empty.textContent = "None";
-            consensusEl.appendChild(empty);
-            return;
+            section.appendChild(empty);
+        } else {
+            items.forEach(item => {
+                const itemEl = document.createElement("div");
+                itemEl.className = "consensus-item";
+                itemEl.textContent = JSON.stringify(item, null, 2);
+                section.appendChild(itemEl);
+            });
         }
-        items.forEach(item => {
-            const pre = document.createElement("pre");
-            pre.textContent = JSON.stringify(item, null, 2);
-            consensusEl.appendChild(pre);
-        });
+        
+        consensusEl.appendChild(section);
     });
 }
 
@@ -176,3 +254,48 @@ stopBtn.addEventListener("click", () => {
     }
     decisionNote.textContent = "⛔ Stopped. No further action taken.";
 });
+
+// Export functionality
+const exportBtn = document.getElementById("export-btn");
+if (exportBtn) {
+    exportBtn.addEventListener("click", async () => {
+        if (!consultId) {
+            alert("No consultation to export");
+            return;
+        }
+        
+        try {
+            const [statusRes, transcriptRes, consensusRes] = await Promise.all([
+                fetch(`/consult/status/${consultId}`),
+                fetch(`/consult/transcript/${consultId}`),
+                fetch(`/consult/consensus/${consultId}`)
+            ]);
+            
+            const status = await statusRes.json();
+            const transcript = await transcriptRes.json();
+            const consensus = await consensusRes.json();
+            
+            const report = {
+                consultationId: consultId,
+                exportDate: new Date().toISOString(),
+                status: status,
+                transcripts: transcript.transcripts,
+                consensus: consensus.consensus
+            };
+            
+            const blob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `consultation-${consultId}-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            decisionNote.textContent = "✓ Report exported successfully";
+            setTimeout(() => decisionNote.textContent = "", 3000);
+        } catch (err) {
+            console.error("Export failed", err);
+            alert("Failed to export report");
+        }
+    });
+}

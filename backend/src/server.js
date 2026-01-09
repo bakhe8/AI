@@ -11,6 +11,7 @@ import { healthCheck } from "./core/health.js";
 import { errorMiddleware } from "./core/error-handler.js";
 import { validateEnvironment } from "./core/env-validator.js";
 import { getMemoryStats } from "./core/memory.js";
+import { rateLimiter, chatRateLimiter, agentRateLimiter } from "./core/rate-limiter.js";
 import logger from "./core/logger.js";
 import { createAdapterEventEmitter } from "./core/ws-bus.js";
 import { WebSocketServer } from "ws";
@@ -64,7 +65,12 @@ app.use((req, res, next) => {
     next();
 });
 
-app.post("/api/chat", chatHandler);
+// Apply rate limiting to all API routes
+app.use("/api", rateLimiter());
+app.use("/agent", rateLimiter());
+app.use("/consult", rateLimiter());
+
+app.post("/api/chat", chatRateLimiter(), chatHandler);
 app.get("/api/messages/:channelId", getMessagesHandler);
 app.post("/api/check-readiness", checkReadiness);
 
@@ -76,7 +82,7 @@ app.get("/consult/consensus/:id", getConsultationConsensus);
 
 // Agent endpoints
 app.get("/agent/tasks", listAgentTasks);
-app.post("/agent/execute", executeAgentTask);
+app.post("/agent/execute", agentRateLimiter(), executeAgentTask);
 app.get("/agent/status/:executionId", getAgentStatus);
 app.get("/agent/results/:executionId", getAgentResults);
 

@@ -7,6 +7,7 @@ const MODEL_ENV = {
     gemini: "GEMINI_API_KEY",
     deepseek: "DEEPSEEK_API_KEY",
     copilot: "GITHUB_TOKEN",
+    claude: "ANTHROPIC_API_KEY",
     mock: null
 };
 
@@ -75,7 +76,7 @@ class ConsultationService {
         if (!snapshot || typeof snapshot !== "string" || !snapshot.trim()) {
             throw new Error("snapshot is required");
         }
-        const targetModels = filterModels(models && models.length ? models : ["openai", "deepseek", "gemini", "copilot", "mock"]);
+        const targetModels = filterModels(models && models.length ? models : ["openai", "deepseek", "gemini", "copilot", "claude", "mock"]);
         if (targetModels.length === 0) {
             throw new Error("no configured models available");
         }

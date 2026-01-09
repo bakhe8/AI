@@ -1,85 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Consultation & Consensus</title>
-    <link rel="stylesheet" href="consultation.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultation Mode — AI Council</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="consult.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
+
 <body>
-    <header class="top-nav">
-        <div class="brand">Consultation Mode (Layer 2)</div>
+    <div class="top-nav">
+        <div class="brand">AI Consultation Council (Layer 2)</div>
         <div class="nav-actions">
-            <a class="ghost-btn" href="/">Back to Chat</a>
-            <a class="ghost-btn" href="/agent-ui/">Back to Agent</a>
+            <a class="nav-btn ghost" href="/">Back to Chat</a>
+            <a class="nav-btn ghost" href="/agent-ui/">Agent Mode</a>
         </div>
-    </header>
+    </div>
 
-    <main>
-        <section class="card">
-            <h2>Start Consultation</h2>
-            <form id="start-form">
-                <label>Question</label>
-                <textarea id="question" placeholder="Example: هل البنية قابلة للتوسع؟" rows="2"></textarea>
+    <div class="container">
+        <!-- Input Section -->
+        <div class="panel input-panel">
+            <div class="panel-header">
+                <h3>Consultation Topic</h3>
+                <span class="badge">Human Directed</span>
+            </div>
+            <div class="input-group">
+                <label>Your Question / Proposal</label>
+                <textarea id="questionInput"
+                    placeholder="E.g., Evaluate the scalability of the current orchestrator architecture..."
+                    rows="3"></textarea>
+            </div>
+            <div class="input-group">
+                <label>Context / Snapshot (Optional)</label>
+                <textarea id="contextInput" class="code-font"
+                    placeholder="Paste relevant code, architectural snapshot, or constraints here..."
+                    rows="5"></textarea>
+            </div>
+            <div class="actions">
+                <button id="startBtn" class="primary-btn">Consult Council</button>
+                <div id="statusIndicator" class="status-badge hidden">Running...</div>
+            </div>
+        </div>
 
-                <label>Snapshot (approved)</label>
-                <textarea id="snapshot" placeholder="Paste approved snapshot here" rows="6"></textarea>
+        <!-- Consensus Panel (Hidden initially) -->
+        <div id="consensusPanel" class="panel hidden">
+            <div class="panel-header">
+                <h3>Consensus Analysis</h3>
+                <span class="badge warning">Draft</span>
+            </div>
+            <div id="consensusContent" class="consensus-body">
+                <!-- Analysis will go here -->
+            </div>
+        </div>
 
-                <label>Models (independent, no shared context)</label>
-                <div class="model-list">
-                    <label><input type="checkbox" value="openai" checked> OpenAI</label>
-                    <label><input type="checkbox" value="deepseek" checked> DeepSeek</label>
-                    <label><input type="checkbox" value="gemini"> Gemini</label>
-                    <label><input type="checkbox" value="copilot"> Copilot</label>
-                    <label><input type="checkbox" value="mock"> Mock</label>
+        <!-- Transcript Grid -->
+        <div id="transcriptGrid" class="transcript-grid hidden">
+            <!-- Dynamic columns for each model will be injected here -->
+        </div>
+
+        <!-- Decision Gate (Hidden initially) -->
+        <div id="decisionGate" class="panel decision-panel hidden">
+            <div class="panel-header">
+                <h3>Decision Gate</h3>
+                <span class="badge danger">Human Authority Required</span>
+            </div>
+            <div class="decision-body">
+                <p>Review the council's feedback above. How would you like to proceed?</p>
+                <div class="decision-actions">
+                    <button class="decision-btn approve" onclick="alert('Implementation not enabled in Phase 4a')">✅
+                        Adopt Plan (Mock)</button>
+                    <button class="decision-btn reask" onclick="window.scrollTo(0,0)">🔄 Re-Phrase / Re-Ask</button>
+                    <button class="decision-btn reject" onclick="location.reload()">⛔ Discard Session</button>
                 </div>
-
-                <button type="submit" class="primary-btn">Start Consultation</button>
-                <span id="current-id" class="pill muted"></span>
-                <div id="start-error" class="error"></div>
-            </form>
-        </section>
-
-        <section class="grid">
-            <div class="card">
-                <div class="card-header">
-                    <h3>Status</h3>
-                    <button id="refresh-btn" class="ghost-btn" type="button">Refresh</button>
-                </div>
-                <ul id="status-list" class="status-list"></ul>
             </div>
+        </div>
+    </div>
 
-            <div class="card">
-                <div class="card-header">
-                    <h3>Consensus (Layer 2)</h3>
-                </div>
-                <div id="consensus" class="consensus"></div>
-            </div>
-        </section>
-
-        <section class="card">
-            <div class="card-header">
-                <h3>Transcripts (Prompt → Response)</h3>
-            </div>
-            <div id="transcripts" class="transcripts"></div>
-        </section>
-
-        <section class="card">
-            <div class="card-header">
-                <h3>Decision Gate (no auto-apply)</h3>
-            </div>
-            <div class="decision">
-                <div class="actions">
-                    <button id="approve-btn" class="primary-btn" type="button">✅ Approve (analysis/plan only)</button>
-                    <button id="reask-btn" class="ghost-btn" type="button">🔄 Re-ask (requires new guidance)</button>
-                    <button id="stop-btn" class="ghost-btn danger" type="button">⛔ Stop</button>
-                </div>
-                <label>Re-ask guidance (required for re-ask)</label>
-                <textarea id="reask-input" placeholder="مثال: افحص من زاوية الأمن فقط" rows="2"></textarea>
-                <div id="decision-note" class="pill muted"></div>
-            </div>
-        </section>
-    </main>
-
-    <script src="consultation.js"></script>
+    <script src="consult.js"></script>
 </body>
+
 </html>

@@ -1,0 +1,196 @@
+/* Inherits variables from root styles */
+:root {
+    --bg-dark: #0f172a;
+    --panel-bg: #1e293b;
+    --border-color: #334155;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --accent: #3b82f6;
+    --accent-hover: #2563eb;
+    --success: #22c55e;
+    --warning: #eab308;
+    --danger: #ef4444;
+}
+
+body {
+    background-color: var(--bg-dark);
+    max-width: 1600px;
+    /* Wider for columns */
+    margin: 0 auto;
+}
+
+.container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    font-size: 0.9em;
+}
+
+textarea {
+    width: 100%;
+    background: #0f172a;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 12px;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    resize: vertical;
+}
+
+.code-font {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9em;
+}
+
+.primary-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.primary-btn:hover {
+    background: var(--accent-hover);
+}
+
+.transcript-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.model-column {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    height: 600px;
+}
+
+.model-header {
+    background: #0f172a;
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+    text-align: center;
+    border-radius: 8px 8px 0 0;
+}
+
+.model-content {
+    padding: 15px;
+    overflow-y: auto;
+    flex-grow: 1;
+    font-size: 0.95em;
+    line-height: 1.6;
+}
+
+.model-content p {
+    margin-bottom: 12px;
+}
+
+.decision-panel {
+    border: 1px solid var(--danger);
+    background: rgba(239, 68, 68, 0.05);
+}
+
+.decision-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+.decision-btn {
+    padding: 12px 24px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--panel-bg);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-weight: 600;
+    min-width: 150px;
+}
+
+.decision-btn.approve {
+    border-color: var(--success);
+    color: var(--success);
+}
+
+.decision-btn.approve:hover {
+    background: var(--success);
+    color: white;
+}
+
+.decision-btn.reask {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.decision-btn.reask:hover {
+    background: var(--accent);
+    color: white;
+}
+
+.decision-btn.reject {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.decision-btn.reject:hover {
+    background: var(--danger);
+    color: white;
+}
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    background: var(--border-color);
+}
+
+.badge.warning {
+    background: rgba(234, 179, 8, 0.2);
+    color: var(--warning);
+}
+
+.badge.danger {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--danger);
+}
+
+.hidden {
+    display: none !important;
+}
