@@ -139,6 +139,11 @@ textarea {
     white-space: pre-wrap;
 }
 
+.code-block {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    background: #0b1220;
+}
+
 .consensus h4 {
     margin: 8px 0 4px;
 }

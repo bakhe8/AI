@@ -45,7 +45,8 @@ function renderTranscripts(data) {
         const prompt = document.createElement("pre");
         prompt.textContent = JSON.stringify(entry.prompt, null, 2);
         const response = document.createElement("pre");
-        response.textContent = entry.response || "";
+        response.className = "code-block";
+        response.textContent = extractCode(entry.response || "");
         container.append(title);
         container.append(document.createTextNode("Prompt:"));
         container.append(prompt);
@@ -53,6 +54,14 @@ function renderTranscripts(data) {
         container.append(response);
         transcriptsEl.appendChild(container);
     });
+}
+
+function extractCode(text) {
+    const match = text.match(/```[a-zA-Z0-9]*\s*([\s\S]*?)```/);
+    if (match && match[1]) {
+        return match[1].trim();
+    }
+    return text;
 }
 
 function renderConsensus(consensus) {
