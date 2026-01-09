@@ -1,3 +1,30 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+}
+
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    background: #111827;
+    color: #fff;
+}
+
+.nav-btn {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.brand {
+    font-weight: bold;
+}
+
 #grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);

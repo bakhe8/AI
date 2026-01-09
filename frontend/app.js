@@ -1,5 +1,12 @@
 console.log("AI Kernel UI loaded");
 
+const switchAgentBtn = document.getElementById('switch-agent');
+if (switchAgentBtn) {
+    switchAgentBtn.addEventListener('click', () => {
+        window.location = '/agent-ui/';
+    });
+}
+
 // Configure marked.js for better rendering
 if (typeof marked !== 'undefined') {
     marked.setOptions({

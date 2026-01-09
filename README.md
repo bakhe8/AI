@@ -36,6 +36,7 @@ ai-kernel/
 ├─ docs/ # Architecture & contracts (Source of Truth)
 ├─ backend/ # API Gateway + Adapters
 ├─ frontend/ # Single-page UI (4 panels)
+├─ frontend/agent/ # Agent Control Panel (Layer 1 UI)
 ├─ backend/src/agent/outputs/
 │   ├─ raw-measurements/ # Layer 1: agent raw outputs (no summaries/ratings/recommendations)
 │   └─ human-reports/    # Layer 2: human/management reports
@@ -89,6 +90,14 @@ The frontend is served by the backend. Open:
 http://localhost:3000
 ```
 
+- Agent UI is separate at:
+
+```text
+http://localhost:3000/agent-ui/
+```
+
+- Navigation is “link-only”: Chat UI has a button “Switch to Agent Mode”; Agent UI has “Back to Chat”. No shared state or CSS.
+
 ### Real-time updates (WebSocket)
 - The frontend opens a WebSocket to the backend to receive live replies without polling.
 - Polling is disabled while WebSocket is connected, and falls back every 10s if WS disconnects or the page is hidden.
@@ -134,6 +143,12 @@ All API errors follow:
 - Naming: place each Layer 1 report under `backend/src/agent/outputs/raw-measurements/` as `case-0X-<short-label>.md` (e.g., `case-01-helper.md`).
 - Example Layer 1 report: raw agent output only, no summaries/ratings/recommendations/deployment guidance (Policy Guard blocks banned terms: recommend, should, deploy, critical, rating).
 - Layer 2 (human) notes go to `backend/src/agent/outputs/human-reports/phase-3-usage-notes.md` and decision snapshot nearby.
+
+### Agent API (UI-only, no chat overlap)
+- GET `/agent/tasks` — list predefined tasks (read-only).
+- POST `/agent/execute` — start a task run `{ taskId, input: { type: "code", content } }` → `{ executionId, status: "running" }`.
+- GET `/agent/status/:executionId` — status/progress.
+- GET `/agent/results/:executionId` — Layer 1 results (patterns, gaps, contradictions, metrics, raw report).
 
 ## 7. Phase 0 Rules (Important)
 During Phase 0, the system MUST NOT:

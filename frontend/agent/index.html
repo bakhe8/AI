@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Control Panel</title>
+    <link rel="stylesheet" href="agent.css">
+</head>
+<body>
+    <header class="topbar">
+        <div>
+            <h1>Cognitive Agent — Measurement Mode</h1>
+            <div class="subtitle">Layer: 1 (Measurement Only)</div>
+        </div>
+        <button id="back-btn" class="ghost-btn">Back to Chat</button>
+    </header>
+
+    <main>
+        <section class="card">
+            <h2>Task Selection</h2>
+            <label for="task-select">Task:</label>
+            <select id="task-select" disabled>
+                <option>Loading tasks...</option>
+            </select>
+            <div class="hint">Predefined tasks only — read-only</div>
+        </section>
+
+        <section class="card">
+            <h2>Input Artifact</h2>
+            <div class="input-mode">
+                <label><input type="radio" name="input-mode" value="paste" checked> Paste JS code</label>
+                <label><input type="radio" name="input-mode" value="upload"> Upload JS file</label>
+            </div>
+            <textarea id="code-input" placeholder="// Paste code here"></textarea>
+            <input type="file" id="file-input" accept=".js" class="hidden">
+            <div class="actions">
+                <button id="run-btn">Run Analysis</button>
+                <span id="run-status" class="status">Idle</span>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Execution Status</h2>
+            <div id="status-text">Idle</div>
+            <div id="progress-text">Models: — | Calls: —</div>
+        </section>
+
+        <section class="card">
+            <h2>Results (Read-only)</h2>
+            <div class="tabs">
+                <button data-tab="patterns" class="tab active">Patterns</button>
+                <button data-tab="gaps" class="tab">Gaps</button>
+                <button data-tab="contradictions" class="tab">Contradictions</button>
+                <button data-tab="metrics" class="tab">Metrics</button>
+                <button data-tab="raw" class="tab">Raw Report</button>
+            </div>
+            <div id="tab-content" class="tab-content"></div>
+        </section>
+    </main>
+
+    <script src="agent.js"></script>
+</body>
+</html>

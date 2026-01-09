@@ -23,14 +23,14 @@ export class AgentOrchestrator {
      * @param {any} input - Task input (e.g., code to analyze)
      * @returns {Promise<Object>} Agent response
      */
-    async executeTask(taskId, input) {
+    async executeTask(taskId, input, executionIdOverride) {
         const task = taskRegistry.get(taskId);
 
         if (!task) {
             throw new Error(`Task '${taskId}' not found in registry`);
         }
 
-        const executionId = `exec-${taskId}-${Date.now()}`;
+        const executionId = executionIdOverride || `exec-${taskId}-${Date.now()}`;
 
         try {
             // Initialize state
@@ -40,6 +40,7 @@ export class AgentOrchestrator {
                 models: task.models,
                 rounds: task.rounds
             });
+            stateManager.updateTask(executionId, { status: 'running' });
 
             stateManager.updateProgress(executionId, 'round1', 0);
 

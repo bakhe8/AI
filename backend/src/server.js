@@ -3,6 +3,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import { chatHandler, getMessagesHandler } from "./api/chat.controller.js";
+import { listAgentTasks, executeAgentTask, getAgentStatus, getAgentResults } from "./api/agent.controller.js";
 import { healthCheck } from "./core/health.js";
 import { errorMiddleware } from "./core/error-handler.js";
 import { validateEnvironment } from "./core/env-validator.js";
@@ -41,6 +42,7 @@ app.use(cors({
 
 app.use(bodyParser.json());
 app.use(express.static("../frontend"));
+app.use("/agent-ui", express.static("../frontend/agent"));
 
 // Set UTF-8 encoding for all responses
 app.use((req, res, next) => {
@@ -56,6 +58,12 @@ app.use((req, res, next) => {
 
 app.post("/api/chat", chatHandler);
 app.get("/api/messages/:channelId", getMessagesHandler);
+
+// Agent endpoints
+app.get("/agent/tasks", listAgentTasks);
+app.post("/agent/execute", executeAgentTask);
+app.get("/agent/status/:executionId", getAgentStatus);
+app.get("/agent/results/:executionId", getAgentResults);
 
 app.get("/api/health", async (req, res) => {
     if (!requireHealthAuth(req, res)) return;
