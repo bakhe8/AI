@@ -1,5 +1,6 @@
 import taskRegistry from "./tasks/task-registry.js";
 import { JSCodeAuditTask } from "./tasks/implementations/js-code-audit.task.js";
+import { SelfCodeReadingTask } from "./tasks/implementations/self-code-reading.task.js";
 import { AgentOrchestrator } from "./core/orchestrator.js";
 import stateManager from "./core/state-manager.js";
 
@@ -12,7 +13,12 @@ class AgentService {
     _ensureDefaultTasks() {
         if (!taskRegistry.has('js-code-audit')) {
             const task = new JSCodeAuditTask();
-            taskRegistry.register(task.toConfig());
+            taskRegistry.register(task);
+        }
+        
+        if (!taskRegistry.has('self-code-reading')) {
+            const task = new SelfCodeReadingTask();
+            taskRegistry.register(task);
         }
     }
 
@@ -25,22 +31,34 @@ class AgentService {
         }));
     }
 
-    executeTask(taskId, codeContent) {
+    executeTask(taskId, codeContent, metadata = {}) {
         const task = taskRegistry.get(taskId);
         if (!task) {
             throw new Error(`Task '${taskId}' not found`);
         }
-        if (!codeContent || typeof codeContent !== 'string' || codeContent.trim().length === 0) {
-            throw new Error('Input code is required');
-        }
 
         const executionId = `agent-${taskId}-${Date.now()}`;
 
-        // Fire and forget; stateManager holds state
-        this.orchestrator.executeTask(taskId, codeContent, executionId)
-            .catch(err => {
-                stateManager.failTask(executionId, err, 'execution');
-            });
+        // Handle self-reading task differently (it doesn't need code content)
+        if (taskId === 'self-code-reading') {
+            const input = typeof codeContent === 'string' ? { targetPath: codeContent } : codeContent;
+            
+            // Start self-reading analysis directly
+            this.orchestrator.executeTask(taskId, JSON.stringify(input), executionId)
+                .catch(err => {
+                    stateManager.failTask(executionId, err, 'execution');
+                });
+        } else {
+            // Regular tasks need code content
+            if (!codeContent || typeof codeContent !== 'string' || codeContent.trim().length === 0) {
+                throw new Error('Input code is required');
+            }
+
+            this.orchestrator.executeTask(taskId, codeContent, executionId)
+                .catch(err => {
+                    stateManager.failTask(executionId, err, 'execution');
+                });
+        }
 
         return { executionId, status: 'running' };
     }

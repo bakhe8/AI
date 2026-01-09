@@ -5,7 +5,8 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import { chatHandler, getMessagesHandler } from "./api/chat.controller.js";
-import { listAgentTasks, executeAgentTask, getAgentStatus, getAgentResults } from "./api/agent.controller.js";
+import { listAgentTasks, executeAgentTask, getAgentStatus, getAgentResults, getDatabaseStats } from "./api/agent.controller.js";
+import { startSelfReading, getSelfReadingSession, listSelfReadingSessions, endSelfReadingSession } from "./api/self-reading.controller.js";
 import { checkReadiness } from "./api/readiness.controller.js";
 import { healthCheck } from "./core/health.js";
 import { errorMiddleware } from "./core/error-handler.js";
@@ -52,6 +53,17 @@ app.use(bodyParser.json());
 app.use(express.static(publicDir));
 app.use("/agent-ui", express.static(path.join(publicDir, "agent")));
 app.use("/consult-ui", express.static(path.join(publicDir, "consultation")));
+app.use("/unified", express.static(path.join(publicDir, "unified")));
+
+// Route handlers for SPA routing
+app.get('/unified', (req, res) => {
+    res.sendFile(path.join(publicDir, 'unified', 'index.html'));
+});
+
+// Default route - redirect to unified interface  
+app.get('/', (req, res) => {
+    res.redirect('/unified');
+});
 
 // Set UTF-8 encoding for all responses
 app.use((req, res, next) => {
@@ -72,7 +84,7 @@ app.use("/consult", rateLimiter());
 
 app.post("/api/chat", chatRateLimiter(), chatHandler);
 app.get("/api/messages/:channelId", getMessagesHandler);
-app.post("/api/check-readiness", checkReadiness);
+app.get("/api/check-readiness", checkReadiness);
 
 // Consultation (Layer 2 only)
 app.post("/consult/start", startConsultation);
@@ -85,6 +97,15 @@ app.get("/agent/tasks", listAgentTasks);
 app.post("/agent/execute", agentRateLimiter(), executeAgentTask);
 app.get("/agent/status/:executionId", getAgentStatus);
 app.get("/agent/results/:executionId", getAgentResults);
+
+// Self-reading endpoints
+app.post("/agent/self-reading/start", startSelfReading);
+app.get("/agent/self-reading/session/:sessionId", getSelfReadingSession);
+app.get("/agent/self-reading/sessions", listSelfReadingSessions);
+app.post("/agent/self-reading/session/:sessionId/end", endSelfReadingSession);
+
+// Database stats
+app.get("/api/stats", getDatabaseStats);
 
 app.get("/api/health", async (req, res) => {
     if (!requireHealthAuth(req, res)) return;
@@ -118,6 +139,19 @@ app.get("/api/memory-stats", (req, res) => {
 
 // Error handling middleware (must be last)
 app.use(errorMiddleware);
+
+// Serve static files from frontend directory
+app.use('/frontend', express.static(publicDir));
+
+// Fallback route for index.html in frontend root
+app.get('/frontend/', (req, res) => {
+    res.sendFile(path.join(publicDir, 'index.html'));
+});
+
+// Route for unified interface
+app.get('/frontend/unified/', (req, res) => {
+    res.sendFile(path.join(publicDir, 'unified', 'index.html'));
+});
 
 const PORT = 3000;
 const server = app.listen(PORT, () => {

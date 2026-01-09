@@ -1,0 +1,63 @@
+2026-01-09 14:46:00 [INFO]:   OPENAI_MODEL = gpt-3.5-turbo (default)
+2026-01-09 14:46:00 [INFO]:   GEMINI_MODEL = gemini-2.0-flash (default)
+2026-01-09 14:46:00 [INFO]:   DEEPSEEK_MODEL = deepseek-chat (default)
+2026-01-09 14:46:00 [INFO]:   COPILOT_MODEL = gpt-4o (default)
+2026-01-09 14:46:00 [WARN]: ⚠ Unconfigured adapters: OPENAI, GEMINI, DEEPSEEK, GITHUB, HEALTH, HEALTH_ACTIVE_CHECK
+2026-01-09 14:46:00 [WARN]:   These adapters will return error messages when called
+2026-01-09 14:46:00 [WARN]:   ⚠ OPENAI_API_KEY not configured - OPENAI adapter will be unavailable
+2026-01-09 14:46:00 [WARN]:   ⚠ GEMINI_API_KEY not configured - GEMINI adapter will be unavailable
+2026-01-09 14:46:00 [WARN]:   ⚠ DEEPSEEK_API_KEY not configured - DEEPSEEK adapter will be unavailable
+2026-01-09 14:46:00 [WARN]:   ⚠ GITHUB_TOKEN not configured - GITHUB adapter will be unavailable
+2026-01-09 14:46:00 [WARN]:   ⚠ HEALTH_TOKEN not configured - HEALTH adapter will be unavailable
+2026-01-09 14:46:00 [WARN]:   ⚠ HEALTH_ACTIVE_CHECK not configured - HEALTH_ACTIVE_CHECK adapter will be unavailable
+2026-01-09 14:46:00 [INFO]: AI Kernel running on http://localhost:3000
+2026-01-09 14:46:00 [INFO]: Press Ctrl+C to stop
+2026-01-09 14:46:15 [INFO]: GET /frontend/unified/
+2026-01-09 14:46:17 [INFO]: WebSocket client connected
+2026-01-09 14:46:26 [INFO]: WebSocket client connected
+2026-01-09 14:48:18 [INFO]:   OPENAI_MODEL = gpt-3.5-turbo (default)
+2026-01-09 14:48:18 [INFO]:   GEMINI_MODEL = gemini-2.0-flash (default)
+2026-01-09 14:48:18 [INFO]:   DEEPSEEK_MODEL = deepseek-chat (default)
+2026-01-09 14:48:18 [INFO]:   COPILOT_MODEL = gpt-4o (default)
+2026-01-09 14:48:18 [WARN]: ⚠ Unconfigured adapters: OPENAI, GEMINI, DEEPSEEK, GITHUB, HEALTH, HEALTH_ACTIVE_CHECK
+2026-01-09 14:48:18 [WARN]:   These adapters will return error messages when called
+2026-01-09 14:48:18 [WARN]:   ⚠ OPENAI_API_KEY not configured - OPENAI adapter will be unavailable
+2026-01-09 14:48:18 [WARN]:   ⚠ GEMINI_API_KEY not configured - GEMINI adapter will be unavailable
+2026-01-09 14:48:18 [WARN]:   ⚠ DEEPSEEK_API_KEY not configured - DEEPSEEK adapter will be unavailable
+2026-01-09 14:48:18 [WARN]:   ⚠ GITHUB_TOKEN not configured - GITHUB adapter will be unavailable
+2026-01-09 14:48:18 [WARN]:   ⚠ HEALTH_TOKEN not configured - HEALTH adapter will be unavailable
+2026-01-09 14:48:18 [WARN]:   ⚠ HEALTH_ACTIVE_CHECK not configured - HEALTH_ACTIVE_CHECK adapter will be unavailable
+2026-01-09 14:48:18 [INFO]: AI Kernel running on http://localhost:3000
+2026-01-09 14:48:18 [INFO]: Press Ctrl+C to stop
+2026-01-09 14:48:29 [INFO]: GET /frontend/unified/
+2026-01-09 14:48:38 [INFO]: WebSocket client connected
+2026-01-09 14:48:47 [INFO]: WebSocket client connected
+2026-01-09 21:41:21 [INFO]:   OPENAI_MODEL = gpt-3.5-turbo (default)
+2026-01-09 21:41:21 [INFO]:   GEMINI_MODEL = gemini-2.0-flash (default)
+2026-01-09 21:41:21 [INFO]:   DEEPSEEK_MODEL = deepseek-chat (default)
+2026-01-09 21:41:21 [INFO]:   COPILOT_MODEL = gpt-4o (default)
+2026-01-09 21:41:21 [WARN]: ⚠ Unconfigured adapters: OPENAI, GEMINI, DEEPSEEK, GITHUB, HEALTH, HEALTH_ACTIVE_CHECK
+2026-01-09 21:41:21 [WARN]:   These adapters will return error messages when called
+2026-01-09 21:41:21 [WARN]:   ⚠ OPENAI_API_KEY not configured - OPENAI adapter will be unavailable
+2026-01-09 21:41:21 [WARN]:   ⚠ GEMINI_API_KEY not configured - GEMINI adapter will be unavailable
+2026-01-09 21:41:21 [WARN]:   ⚠ DEEPSEEK_API_KEY not configured - DEEPSEEK adapter will be unavailable
+2026-01-09 21:41:21 [WARN]:   ⚠ GITHUB_TOKEN not configured - GITHUB adapter will be unavailable
+2026-01-09 21:41:21 [WARN]:   ⚠ HEALTH_TOKEN not configured - HEALTH adapter will be unavailable
+2026-01-09 21:41:21 [WARN]:   ⚠ HEALTH_ACTIVE_CHECK not configured - HEALTH_ACTIVE_CHECK adapter will be unavailable
+2026-01-09 21:41:21 [INFO]: AI Kernel running on http://localhost:3000
+2026-01-09 21:41:21 [INFO]: Press Ctrl+C to stop
+2026-01-09 21:41:36 [INFO]: GET /frontend/unified/
+2026-01-09 21:58:38 [INFO]:   OPENAI_MODEL = gpt-3.5-turbo (default)
+2026-01-09 21:58:38 [INFO]:   GEMINI_MODEL = gemini-2.0-flash (default)
+2026-01-09 21:58:38 [INFO]:   DEEPSEEK_MODEL = deepseek-chat (default)
+2026-01-09 21:58:38 [INFO]:   COPILOT_MODEL = gpt-4o (default)
+2026-01-09 21:58:38 [WARN]: ⚠ Unconfigured adapters: OPENAI, GEMINI, DEEPSEEK, GITHUB, HEALTH, HEALTH_ACTIVE_CHECK
+2026-01-09 21:58:38 [WARN]:   These adapters will return error messages when called
+2026-01-09 21:58:38 [WARN]:   ⚠ OPENAI_API_KEY not configured - OPENAI adapter will be unavailable
+2026-01-09 21:58:38 [WARN]:   ⚠ GEMINI_API_KEY not configured - GEMINI adapter will be unavailable
+2026-01-09 21:58:38 [WARN]:   ⚠ DEEPSEEK_API_KEY not configured - DEEPSEEK adapter will be unavailable
+2026-01-09 21:58:38 [WARN]:   ⚠ GITHUB_TOKEN not configured - GITHUB adapter will be unavailable
+2026-01-09 21:58:38 [WARN]:   ⚠ HEALTH_TOKEN not configured - HEALTH adapter will be unavailable
+2026-01-09 21:58:38 [WARN]:   ⚠ HEALTH_ACTIVE_CHECK not configured - HEALTH_ACTIVE_CHECK adapter will be unavailable
+2026-01-09 21:58:38 [INFO]: AI Kernel running on http://localhost:3000
+2026-01-09 21:58:38 [INFO]: Press Ctrl+C to stop

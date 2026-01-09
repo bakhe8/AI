@@ -1,4 +1,5 @@
 import agentService from "../agent/service.js";
+import databaseService from "../core/database.js";
 
 export async function listAgentTasks(req, res) {
     try {
@@ -20,6 +21,13 @@ export async function executeAgentTask(req, res) {
         }
 
         const result = agentService.executeTask(taskId, input.content);
+        
+        // Save to database
+        databaseService.saveAgentExecution(result.executionId, taskId, input.content, {
+            timestamp: new Date().toISOString(),
+            client_info: req.headers['user-agent'] || 'unknown'
+        });
+        
         res.status(202).json(result);
     } catch (err) {
         res.status(500).json({ error: err.message, code: 500 });
@@ -47,6 +55,19 @@ export async function getAgentResults(req, res) {
             return res.status(404).json({ error: 'Execution not found', code: 404 });
         }
         res.json(results);
+    } catch (err) {
+        res.status(500).json({ error: err.message, code: 500 });
+    }
+}
+
+export async function getDatabaseStats(req, res) {
+    try {
+        const stats = databaseService.getStats();
+        res.json({
+            success: true,
+            stats: stats,
+            timestamp: new Date().toISOString()
+        });
     } catch (err) {
         res.status(500).json({ error: err.message, code: 500 });
     }

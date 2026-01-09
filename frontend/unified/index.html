@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Kernel - Unified Interface</title>
+    <link rel="stylesheet" href="/unified/unified.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="brand">
+                <h1>AI Kernel</h1>
+                <div class="subtitle">Chat Interface + Agent + Consultation</div>
+            </div>
+            <div class="status-panel">
+                <div class="mode-indicator" id="mode-indicator">Chat Mode</div>
+                <div class="active-models" id="active-models"></div>
+            </div>
+        </header>
+
+        <!-- Main Chat Interface -->
+        <main class="chat-container">
+            <!-- Messages Area -->
+            <div class="messages-area" id="messages">
+                <div class="welcome-message">
+                    <h2>🚀 Welcome to AI Kernel</h2>
+                    <p>Type your message or use commands:</p>
+                    <ul class="command-help">
+                        <li><code>@start</code> - Start agent analysis</li>
+                        <li><code>@consult &lt;question&gt;</code> - Multi-model consultation</li>
+                        <li><code>@models</code> - Show available models</li>
+                        <li><code>@status</code> - Check current status</li>
+                        <li><code>@help</code> - Show all commands</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <div class="input-container">
+                    <textarea id="message-input" placeholder="Type your message or command (e.g., @start, @consult)..." rows="3"></textarea>
+                    <button id="send-button" class="send-btn">
+                        <span>Send</span>
+                        <span class="shortcut">⏎</span>
+                    </button>
+                </div>
+                
+                <!-- Command Suggestions -->
+                <div class="command-suggestions hidden" id="command-suggestions">
+                    <div class="suggestion" data-command="@start">@start - Begin agent analysis</div>
+                    <div class="suggestion" data-command="@consult ">@consult - Multi-model consultation</div>
+                    <div class="suggestion" data-command="@models">@models - List available models</div>
+                    <div class="suggestion" data-command="@status">@status - Current status</div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Agent Working Indicator -->
+        <div class="agent-status hidden" id="agent-status">
+            <div class="working-indicator">
+                <div class="spinner"></div>
+                <span id="agent-activity">Agent is thinking...</span>
+            </div>
+            <button class="stop-btn" id="stop-agent">@stop</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/unified/unified.js"></script>
+</body>
+</html>

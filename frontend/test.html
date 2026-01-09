@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - AI Kernel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            background: #f5f5f5;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .button {
+            background: #007acc;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .button:hover {
+            background: #005999;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            background: #e8f5e8;
+            border-left: 4px solid #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 AI Kernel - اختبار الواجهة</h1>
+        
+        <div class="status">
+            <strong>✅ السيرفر يعمل بنجاح!</strong><br>
+            التاريخ: <span id="current-time"></span>
+        </div>
+        
+        <h2>🎯 الواجهات المتاحة:</h2>
+        
+        <a href="/unified" class="button">🔗 الواجهة الموحدة الجديدة</a><br>
+        <a href="/agent-ui/" class="button">🤖 Agent Mode (القديم)</a><br>
+        <a href="/consult-ui/" class="button">🔍 Consultation (القديم)</a><br>
+        <a href="/index.html" class="button">💬 Chat 4-Panels (القديم)</a>
+        
+        <h2>🧪 اختبار JavaScript:</h2>
+        <button class="button" onclick="testAPI()">اختبار API</button>
+        <button class="button" onclick="testModels()">اختبار النماذج</button>
+        
+        <div id="test-results" style="margin-top: 20px; text-align: left;"></div>
+    </div>
+
+    <script>
+        // Update current time
+        document.getElementById('current-time').textContent = new Date().toLocaleString('ar-EG');
+        
+        async function testAPI() {
+            const results = document.getElementById('test-results');
+            results.innerHTML = '<p>🔄 اختبار الاتصال بـ API...</p>';
+            
+            try {
+                const response = await fetch('/api/check-readiness');
+                const data = await response.json();
+                
+                results.innerHTML = `
+                    <h3>✅ نتيجة اختبار API:</h3>
+                    <pre style="background: #f0f0f0; padding: 10px; border-radius: 5px;">
+${JSON.stringify(data, null, 2)}
+                    </pre>
+                `;
+            } catch (error) {
+                results.innerHTML = `<p style="color: red;">❌ خطأ في API: ${error.message}</p>`;
+            }
+        }
+        
+        async function testModels() {
+            const results = document.getElementById('test-results');
+            results.innerHTML = '<p>🔄 اختبار النماذج...</p>';
+            
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        channel_id: 'test-channel',
+                        model: 'openai',
+                        messages: [{ role: 'user', content: 'اختبار بسيط' }]
+                    })
+                });
+                
+                const data = await response.json();
+                
+                results.innerHTML = `
+                    <h3>✅ نتيجة اختبار النماذج:</h3>
+                    <pre style="background: #f0f0f0; padding: 10px; border-radius: 5px;">
+${JSON.stringify(data, null, 2)}
+                    </pre>
+                `;
+            } catch (error) {
+                results.innerHTML = `<p style="color: red;">❌ خطأ في النماذج: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

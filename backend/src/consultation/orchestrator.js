@@ -1,8 +1,9 @@
-import { kernelClient } from "../core/kernel-client.js";
+import { KernelClient } from "../agent/core/kernel-client.js";
 
 class ConsultationOrchestrator {
     constructor() {
         this.sessions = new Map(); // In-memory storage (volatile)
+        this.kernelClient = new KernelClient();
     }
 
     /**
@@ -46,9 +47,9 @@ Focus on logic, facts, and potential risks.`,
         };
 
         // Send to all models in parallel
-        // Note: kernelClient.sendParallel is ideal for this
+        // Note: this.kernelClient.sendParallel is ideal for this
         try {
-            const results = await kernelClient.sendParallel(models, prompt, {
+            const results = await this.kernelClient.sendParallel(models, prompt, {
                 type: 'consultation',
                 id: consultationId
             });
